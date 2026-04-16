@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "LifeBlock", menuName = "Scriptable Objects/LifeBlock")]
 public class LifeBlock : ScriptableObject
 {
-    public float lifeAmount;
+    public int lifeAmount;
     // Start is called before the first frame update
     void Start()
     {

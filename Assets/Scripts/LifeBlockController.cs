@@ -32,7 +32,7 @@ public class LifeBlockController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log(lifeblock.lifeAmount);
+        GameManager.Instance.playerLives += lifeblock.lifeAmount;
         Destroy(gameObject);
     }
 }
