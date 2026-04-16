@@ -421,6 +421,7 @@ MonoBehaviour:
   capsuleCollider: {fileID: 291016830041690806}
   boxCollider: {fileID: 7092782372143460757}
   boxCollider2: {fileID: 9027364677437570473}
+  explosionParticle: {fileID: 6104280663052025139, guid: cf1e9853146581042be2b9f61ea10d76, type: 3}
   moveSpeed: 5
   jumpForce: 12
   jumpCutMultiplier: 0.5

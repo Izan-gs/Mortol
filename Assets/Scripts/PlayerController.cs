@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     public BoxCollider2D boxCollider;
     public BoxCollider2D boxCollider2;
 
+    public GameObject explosionParticle;
+
     #region Movement
     [SerializeField] private float moveSpeed = 5f;
     private Vector2 moveInput;
@@ -223,6 +225,7 @@ public class PlayerController : MonoBehaviour
 
     void Explode()
     {
+        Instantiate(explosionParticle, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
