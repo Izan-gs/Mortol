@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class Enemy : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public abstract class Enemy : MonoBehaviour
     protected int playerLifeBonus;
 
     protected SpriteRenderer spriteRenderer;
+    
+    [HideInInspector] public UnityEvent onDie; // Event suscription
 
     protected virtual void Awake()
     {
@@ -33,6 +36,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Die()
     {
+        onDie?.Invoke(); // Calls the event when self (enemy) dies
         Destroy(gameObject);
     }
 }

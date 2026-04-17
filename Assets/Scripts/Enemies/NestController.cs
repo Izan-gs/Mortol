@@ -4,37 +4,30 @@ using UnityEngine;
 
 public class NestController : MonoBehaviour
 {
-    // Variable de clase constante
-    protected const int MAX_KILLED_COUNT = 3;
+    protected const int MAX_KILLED_COUNT = 3; // Class variable
 
-    //
-    private int deadUnitsCount;
-    private bool isAlive;
-    private bool isActive;
-    private float timer;
+    private int deadUnitsCount; // Individually count for each one
+    private bool isAlive = true; // It can be death so nothing does
+    private bool isActive = true; // It can be inactive if there are blockers in front of it
+    private float timer; // Time running for spawns
 
-    //
-    [SerializeField]
-    private int spawnInterval;
-    [SerializeField]
-    private Enemy spawnUnitType; // Prefab
+    [SerializeField] private int spawnInterval; // Interval between spawns
+    [SerializeField] private GameObject spawnUnitType; // Prefab
 
     //
     private void Awake()
     {
-        isAlive = true;
-        isActive = true;
         spawnInterval = 3;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
-    // Calls Spawn in the interval selected
+    // Calls Spawn in the chosen interval
     void Update()
     {
         if (!isActive || !isAlive) return;
@@ -50,9 +43,14 @@ public class NestController : MonoBehaviour
     // Spawns the selected enemy type.
     public void Spawn()
     {
-        Instantiate(spawnUnitType, transform.position, Quaternion.identity);
+        GameObject bumblebeeObj = Instantiate(spawnUnitType, transform.position, Quaternion.identity);
+        Enemy enemy = bumblebeeObj.GetComponent<Enemy>();
+        if(enemy != null)
+        {
+            enemy.onDie.AddListener(IncrementDeadUnits);
+        }
     }
-    // The nest dies when player kills MAX_KILLED_COUNT units.
+    // The nest dies when player kills MAX_KILLED_COUNT units from nest.
     public void IncrementDeadUnits()
     {
         deadUnitsCount++;
@@ -69,9 +67,13 @@ public class NestController : MonoBehaviour
     }
 }
 
-// Nest reference
-    // Subscribing events
+// ASK
 // Cast properly
 // Disable correctly (Update)
 
-// Constructor ? Init variables
+
+// REMEMBER
+// Herencia en C# - Segundo + David
+// ScriptableObjects - Fran
+// ENUM State Machine - Fran
+// Ejemplos de segundo curso - David
