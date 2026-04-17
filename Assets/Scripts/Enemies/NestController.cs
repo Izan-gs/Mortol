@@ -68,3 +68,10 @@ public class NestController : MonoBehaviour
         // Check for player stone ritual in front of it then isAlive = false;
     }
 }
+
+// Nest reference
+    // Subscribing events
+// Cast properly
+// Disable correctly (Update)
+
+// Constructor ? Init variables

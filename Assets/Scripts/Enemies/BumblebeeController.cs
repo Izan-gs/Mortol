@@ -6,6 +6,10 @@ public class BumblebeeController : Enemy
 {
     private NestController nest;
 
+    protected override void Awake()
+    {
+        life = 1;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -13,7 +17,7 @@ public class BumblebeeController : Enemy
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
         
     }

@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PigController : Enemy
 {
+    protected override void Awake()
+    {
+        life = 1;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -11,7 +15,7 @@ public class PigController : Enemy
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
         
     }

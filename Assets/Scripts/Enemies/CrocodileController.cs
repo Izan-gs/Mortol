@@ -10,7 +10,11 @@ public class CrocodileController : Enemy
     {
         velocity = assaultSpeed;
     }
-
+    //
+    protected override void Awake()
+    {
+        life = 3; // Por ritual stone muere de 1 hit
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +22,7 @@ public class CrocodileController : Enemy
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
         
     }
