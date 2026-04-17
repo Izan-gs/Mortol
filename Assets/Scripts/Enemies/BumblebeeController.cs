@@ -8,7 +8,7 @@ public class BumblebeeController : Enemy
     protected override void Awake()
     {
         life = 1;
-        velocity = 1;
+        velocity = 3;
         direction = new Vector2(1,0);
     }
     // Start is called before the first frame update
@@ -25,7 +25,7 @@ public class BumblebeeController : Enemy
     // 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player")) // Otra opción de cast?
         {
             Die();
         }else if (collision.gameObject.CompareTag("Bloque"))

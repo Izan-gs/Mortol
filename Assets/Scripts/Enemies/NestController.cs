@@ -30,6 +30,7 @@ public class NestController : MonoBehaviour
     // Calls Spawn in the chosen interval
     void Update()
     {
+        // Encontrar otra forma de desactivarlo correctamente!
         if (!isActive || !isAlive) return;
 
         timer += Time.deltaTime;
@@ -66,14 +67,3 @@ public class NestController : MonoBehaviour
         // Check for player stone ritual in front of it then isAlive = false;
     }
 }
-
-// ASK
-// Cast properly
-// Disable correctly (Update)
-
-
-// REMEMBER
-// Herencia en C# - Segundo + David
-// ScriptableObjects - Fran
-// ENUM State Machine - Fran
-// Ejemplos de segundo curso - David

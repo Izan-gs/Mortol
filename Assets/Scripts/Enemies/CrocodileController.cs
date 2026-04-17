@@ -6,10 +6,6 @@ public class CrocodileController : Enemy
 {
     private float assaultSpeed;
 
-    public void Assault()
-    {
-        velocity = assaultSpeed;
-    }
     //
     protected override void Awake()
     {
@@ -25,5 +21,9 @@ public class CrocodileController : Enemy
     protected override void Update()
     {
         
+    }
+    public void Assault()
+    {
+        velocity = assaultSpeed;
     }
 }
