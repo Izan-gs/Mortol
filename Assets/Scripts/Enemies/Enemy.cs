@@ -45,6 +45,10 @@ public abstract class Enemy : MonoBehaviour
             TakeDamage(1);
             return;
         }
+        else if (player != null)
+        {
+            player.Die();
+        }
     }
 
     public virtual void TakeDamage(int damage)
