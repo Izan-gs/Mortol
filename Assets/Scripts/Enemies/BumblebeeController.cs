@@ -23,7 +23,7 @@ public class BumblebeeController : Enemy
         
     }
     // 
-    protected override void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player")) // Otra opción de cast?
         {

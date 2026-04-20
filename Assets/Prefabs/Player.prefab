@@ -48,9 +48,9 @@ GameObject:
   - component: {fileID: 1229570271568408837}
   - component: {fileID: 8668512304803866400}
   - component: {fileID: 56675010003980633}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -132,7 +132,7 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 5772519039162997485}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6843839eec3fa424c83d0e68285894a0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -167,7 +167,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 5772519039162997485}
   m_Enabled: 0
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6843839eec3fa424c83d0e68285894a0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -212,7 +212,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 5772519039162997485}
   m_Enabled: 0
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6843839eec3fa424c83d0e68285894a0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -264,7 +264,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 3
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6843839eec3fa424c83d0e68285894a0, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -434,3 +434,4 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  deadParticle: {fileID: 6493863498170319993, guid: d2ed4a019d849504b8346cbd747363ae, type: 3}

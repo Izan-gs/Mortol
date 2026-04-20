@@ -6,14 +6,20 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
+    private SpriteRenderer spriteRenderer;
+
+    [Header("Colliders")]
     public CapsuleCollider2D capsuleCollider;
     public BoxCollider2D boxCollider;
     public BoxCollider2D boxCollider2;
 
+    [Header("FX")]
     public GameObject explosionParticle;
 
     #region Movement
     [SerializeField] private float moveSpeed = 5f;
+    private float lockedY;
+    private bool lockYPosition;
     private Vector2 moveInput;
     #endregion
 
@@ -44,9 +50,14 @@ public class PlayerController : MonoBehaviour
 
     #region State
     private bool isStone;
+    private bool wasFallingStone;
     private bool isStuck;
     private bool isSticking;
+    public bool canDamageEnemies = false;
     #endregion
+
+    [Header("FX")]
+    [SerializeField] private GameObject deadParticle;
 
     #region Animator Hashes
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -57,14 +68,25 @@ public class PlayerController : MonoBehaviour
     private static readonly int JumpHash = Animator.StringToHash("Jump");
     private static readonly int TorpedoHash = Animator.StringToHash("Torpedo");
     private static readonly int CrashHash = Animator.StringToHash("Crash");
+    private static readonly int DieHash = Animator.StringToHash("Die");
     #endregion
 
     private float animSpeed;
+
+    public bool IsSticking() => isSticking;
+    public bool IsStoneFalling() => isStone && wasFallingStone;
+    private bool isInvulnerable;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+
+        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
     }
 
     private void Update()
@@ -82,10 +104,21 @@ public class PlayerController : MonoBehaviour
             Move();
 
         ApplyBetterJump();
+
+        // Keep Y fixed while sticking
+        if (lockYPosition)
+        {
+            transform.position = new Vector3(
+                transform.position.x,
+                lockedY,
+                transform.position.z
+            );
+
+            rb.velocity = new Vector2(rb.velocity.x, 0f);
+        }
     }
 
-    #region Animator Safe Update
-
+    #region Animator
     void UpdateAnimator()
     {
         if (!anim) return;
@@ -98,7 +131,6 @@ public class PlayerController : MonoBehaviour
         anim.SetBool(StuckHash, isStuck);
         anim.SetBool(StickHash, isSticking);
     }
-
     #endregion
 
     #region Movement
@@ -111,10 +143,15 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Ground + Jump
+    #region Ground & Jump
     void CheckGround()
     {
         grounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
+
+        if (grounded)
+        {
+            wasFallingStone = false;
+        }
     }
 
     void HandleJumpAssist()
@@ -139,7 +176,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Better Jump
+    #region Physics
     void ApplyBetterJump()
     {
         if (rb.velocity.y < 0)
@@ -155,7 +192,9 @@ public class PlayerController : MonoBehaviour
 
     #region Input
     public void OnMove(InputAction.CallbackContext context)
-        => moveInput = context.ReadValue<Vector2>();
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
 
     public void OnJump(InputAction.CallbackContext context)
     {
@@ -174,20 +213,17 @@ public class PlayerController : MonoBehaviour
 
     public void OnStone(InputAction.CallbackContext context)
     {
-        if (context.performed)
-            TurnToStone();
+        if (context.performed) TurnToStone();
     }
 
     public void OnExplode(InputAction.CallbackContext context)
     {
-        if (context.performed)
-            Explode();
+        if (context.performed) Explode();
     }
 
     public void OnStick(InputAction.CallbackContext context)
     {
-        if (context.performed)
-            StartStick();
+        if (context.performed) StartStick();
     }
     #endregion
 
@@ -198,6 +234,11 @@ public class PlayerController : MonoBehaviour
 
         isStone = true;
         isSticking = false;
+        isInvulnerable = true;
+
+        canDamageEnemies = true;
+
+        wasFallingStone = true;
 
         if (anim) anim.SetTrigger(StoneHash);
 
@@ -219,14 +260,11 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSeconds(0.05f);
 
+        canDamageEnemies = false;
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
-    }
-
-    void Explode()
-    {
-        Instantiate(explosionParticle, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+        gameObject.layer = LayerMask.NameToLayer("Platform");
+        gameObject.tag = "Platform";
     }
 
     void StartStick()
@@ -235,6 +273,9 @@ public class PlayerController : MonoBehaviour
 
         isSticking = true;
         isJumping = false;
+        isInvulnerable = true;
+
+        canDamageEnemies = true;
 
         if (anim) anim.SetTrigger(TorpedoHash);
 
@@ -244,7 +285,10 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = 0f;
 
         float dir = Mathf.Sign(transform.localScale.x);
-        rb.velocity = new Vector2(dir * 15f, 0f);
+        rb.velocity = new Vector2(dir * 20f, 0f);
+
+        lockedY = transform.position.y;
+        lockYPosition = true;
     }
 
     void Stick()
@@ -252,10 +296,24 @@ public class PlayerController : MonoBehaviour
         isSticking = false;
         isStuck = true;
 
+        canDamageEnemies = false;
+
+        lockYPosition = false;
+
         if (anim) anim.SetTrigger(CrashHash);
 
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
+
+        Destroy(this);
+    }
+
+    void Explode()
+    {
+        Instantiate(explosionParticle, transform.position, Quaternion.identity);
+        Instantiate(deadParticle, transform.position, Quaternion.identity);
+
+        Destroy(gameObject);
     }
     #endregion
 
@@ -268,6 +326,32 @@ public class PlayerController : MonoBehaviour
         {
             Stick();
         }
+    }
+    #endregion
+
+    #region Death
+    public void Die()
+    {
+        if (isInvulnerable) return;
+
+        moveInput = Vector2.zero;
+        rb.velocity = Vector2.zero;
+
+        int playerLayer = gameObject.layer;
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        int otherPlayerLayer = LayerMask.NameToLayer("Player");
+
+        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+        Physics2D.IgnoreLayerCollision(playerLayer, otherPlayerLayer, true);
+
+        gameObject.tag = "Untagged";
+
+        if (anim) anim.SetTrigger(DieHash);
+
+        spriteRenderer.sortingOrder = -1;
+
+        canDamageEnemies = false;
+        Destroy(this);
     }
     #endregion
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,8 +12,14 @@ public abstract class Enemy : MonoBehaviour
     protected int playerLifeBonus;
 
     protected SpriteRenderer spriteRenderer;
-    
+
+    [Header("FX")]
+    [SerializeField] private GameObject deadParticle;
+
     [HideInInspector] public UnityEvent onDie; // Event suscription
+
+    private bool isInvulnerable = false;
+    [SerializeField] private float invulnerableTime = 0.1f;
 
     protected virtual void Awake()
     {
@@ -31,12 +38,47 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        Die();
+        PlayerController player = collision.gameObject.GetComponentInParent<PlayerController>();
+
+        if (player != null && player.canDamageEnemies)
+        {
+            TakeDamage(1);
+            return;
+        }
     }
+
+    public virtual void TakeDamage(int damage)
+    {
+        if (isInvulnerable) return;
+
+        life -= damage;
+
+        if (life <= 0)
+        {
+            Die();
+            return;
+        }
+
+        StartCoroutine(Invulnerability());
+    }
+
+    private IEnumerator Invulnerability()
+    {
+        isInvulnerable = true;
+        yield return new WaitForSeconds(invulnerableTime);
+        isInvulnerable = false;
+    }
+
 
     protected virtual void Die()
     {
-        onDie?.Invoke(); // Calls the event when self (enemy) dies
+        onDie?.Invoke();
+
+        if (deadParticle != null)
+        {
+            Instantiate(deadParticle, transform.position, Quaternion.identity);
+        }
+
         Destroy(gameObject);
     }
 }

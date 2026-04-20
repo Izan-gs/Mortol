@@ -1,0 +1,13 @@
+{
+    "type": "prefab",
+    "roots": [],
+    "includes": [".prefab"],
+    "excludes": ["Assets/Temp/", "Assets/External/"],
+    "options": {
+        "types": true,
+        "properties": true,
+        "extended": true,
+        "dependencies": false
+    },
+    "baseScore": 150
+}

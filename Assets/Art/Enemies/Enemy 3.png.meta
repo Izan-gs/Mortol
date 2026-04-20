@@ -149,7 +149,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "Enemy 3 (Level 1 no est\xE1)_0"
+      name: Enemy 3_0
       rect:
         serializedVersion: 2
         x: 0
@@ -157,7 +157,7 @@ TextureImporter:
         width: 32
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -170,7 +170,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "Enemy 3 (Level 1 no est\xE1)_1"
+      name: Enemy 3_1
       rect:
         serializedVersion: 2
         x: 32
@@ -178,7 +178,7 @@ TextureImporter:
         width: 32
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -191,7 +191,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "Enemy 3 (Level 1 no est\xE1)_2"
+      name: Enemy 3_2
       rect:
         serializedVersion: 2
         x: 64
@@ -199,7 +199,7 @@ TextureImporter:
         width: 32
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -222,9 +222,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      "Enemy 3 (Level 1 no est\xE1)_0": 223147746
-      "Enemy 3 (Level 1 no est\xE1)_1": -436696647
-      "Enemy 3 (Level 1 no est\xE1)_2": -933253557
+      Enemy 3_0: 223147746
+      Enemy 3_1: -436696647
+      Enemy 3_2: -933253557
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
