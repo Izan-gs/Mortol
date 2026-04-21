@@ -123,6 +123,7 @@ public class CrocodileController : Enemy
 
     #region Movement Logic
 
+    // Detecta los bordes y/o paredes para proceder con el cambio de sentido
     private void DetectWallOrEdge()
     {
         bool wallHit = Physics2D.Raycast(
@@ -143,12 +144,14 @@ public class CrocodileController : Enemy
             Flip();
     }
 
+    // Aplica el cambio de signo
     private void Flip()
     {
         direction = -direction;
         ApplyFlip();
     }
 
+    // Ajusta la escala
     private void ApplyFlip()
     {
         Vector3 scale = transform.localScale;
@@ -171,8 +174,10 @@ public class CrocodileController : Enemy
 
     #region Combat
 
+    // Aplica el cambio de color al sprite si recibe daño
     public override void TakeDamage(int damage)
     {
+        // 
         base.TakeDamage(damage);
 
         if (spriteRenderer != null && life == 1)
