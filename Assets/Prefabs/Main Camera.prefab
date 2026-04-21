@@ -109,8 +109,11 @@ MonoBehaviour:
   smoothSpeed: 5
   offsetX: 2
   wallOffset: 9.3
-  wallHeight: 10
+  wallHeight: 14
   wallThickness: 1
+  shakeAmplitude: 0.35
+  shakeFrequency: 35
+  shakeRecovery: 8
 --- !u!1 &6426261097936423698
 GameObject:
   m_ObjectHideFlags: 0

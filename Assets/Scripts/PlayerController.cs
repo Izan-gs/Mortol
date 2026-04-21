@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+    private CameraController cameraController;
 
     [Header("Colliders")]
     public CapsuleCollider2D capsuleCollider;
@@ -92,6 +93,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        cameraController = FindAnyObjectByType<CameraController>();
 
         int playerLayer = LayerMask.NameToLayer("Player");
         int enemyLayer = LayerMask.NameToLayer("Enemy");
@@ -447,6 +449,11 @@ public class PlayerController : MonoBehaviour
         canDamageEnemies = false;
 
         GameManager.Instance.PlayerDied();
+
+        if (cameraController != null)
+        {
+            cameraController.Shake(0.35f, 0.35f);
+        }
 
         Destroy(this);
     }

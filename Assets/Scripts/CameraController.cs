@@ -22,11 +22,41 @@ public class CameraController : MonoBehaviour
 
     private float wallX;
 
+    #region Camera Shake
+
+    private float shakeTime;
+    private float shakeIntensity;
+    private Vector3 shakeOffset;
+    private Vector3 basePosition;
+
+    public void Shake(float duration, float intensity)
+    {
+        shakeTime = duration;
+        shakeIntensity = intensity;
+    }
+
+    Vector3 GetShakeOffset()
+    {
+        float strength = shakeIntensity * (shakeTime);
+
+        float x = Random.Range(-1f, 1f) * strength;
+        float y = Random.Range(-1f, 1f) * strength;
+
+        return new Vector3(x, y, 0f);
+    }
+
+    #endregion
+
     public BoxCollider2D GetWallCollider() => wallCollider;
 
     void Awake()
     {
         CreateWall();
+    }
+
+    void Start()
+    {
+        basePosition = transform.position;
     }
 
     public void SetTarget(Transform newTarget)
@@ -50,11 +80,23 @@ public class CameraController : MonoBehaviour
             maxX = Mathf.Max(maxX, targetX);
         }
 
-        transform.position = Vector3.Lerp(
-            transform.position,
-            new Vector3(maxX, transform.position.y, transform.position.z),
-            smoothSpeed * Time.deltaTime
+        // Store clean base position (NO shake contamination)
+        basePosition = new Vector3(
+            Mathf.Lerp(basePosition.x, maxX, smoothSpeed * Time.deltaTime),
+            basePosition.y,
+            transform.position.z
         );
+
+        // Shake
+        Vector3 shake = Vector3.zero;
+
+        if (shakeTime > 0f)
+        {
+            shakeTime -= Time.deltaTime;
+            shake = GetShakeOffset();
+        }
+
+        transform.position = basePosition + shake;
 
         UpdateWall();
         CheckPlayerCrossing();
