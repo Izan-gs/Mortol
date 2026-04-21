@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 7092782372143460757}
   - component: {fileID: 6327743858046608599}
   - component: {fileID: 9027364677437570473}
+  - component: {fileID: 7809916302040385230}
   - component: {fileID: 6945780244472916280}
   - component: {fileID: 1229570271568408837}
   - component: {fileID: 8668512304803866400}
@@ -268,6 +269,51 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.16, y: 0.16}
   m_EdgeRadius: 0
+--- !u!61 &7809916302040385230
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5772519039162997485}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: 6843839eec3fa424c83d0e68285894a0, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 1
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.005898308, y: -0.065}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.16, y: 0.16}
+    newSize: {x: 0.16, y: 0.16}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.13912725, y: 0.038977914}
+  m_EdgeRadius: 0
 --- !u!50 &6945780244472916280
 Rigidbody2D:
   serializedVersion: 4
@@ -441,6 +487,7 @@ MonoBehaviour:
   capsuleCollider: {fileID: 291016830041690806}
   boxCollider: {fileID: 7092782372143460757}
   boxCollider2: {fileID: 9027364677437570473}
+  boxColliderDeadSpikes: {fileID: 7809916302040385230}
   explosionParticle: {fileID: 6104280663052025139, guid: cf1e9853146581042be2b9f61ea10d76, type: 3}
   deadParticle: {fileID: 6493863498170319993, guid: d2ed4a019d849504b8346cbd747363ae, type: 3}
   moveSpeed: 5

@@ -6,21 +6,31 @@ public class CameraController : MonoBehaviour
     [Header("Settings")]
     public float smoothSpeed = 5f;
     public float offsetX = 2f;
+    private bool waitingForSafeSpawn;
+    private System.Action onSafeSpawnReady;
 
     [Header("Wall")]
     public float wallOffset = 6f;
     public float wallHeight = 10f;
     public float wallThickness = 1f;
 
+    [Header("Ship Collision Push")]
+    public float shipPushSpeed = 6f;
+    public LayerMask platformMask;
+
     private Transform player;
     private float maxX;
-    private bool playerIsPastWall;
     private bool stopFollowing;
 
     private BoxCollider2D wallCollider;
     private PlayerController currentPlayer;
 
     private float wallX;
+
+    // Ship collision system
+    public GameObject spaceShip;
+    private ShipCollisionDetector shipDetector;
+    private Coroutine shipPushRoutine;
 
     #region Camera Shake
 
@@ -52,6 +62,11 @@ public class CameraController : MonoBehaviour
     void Awake()
     {
         CreateWall();
+
+        if (spaceShip != null)
+        {
+            shipDetector = spaceShip.GetComponent<ShipCollisionDetector>();
+        }
     }
 
     void Start()
@@ -80,14 +95,12 @@ public class CameraController : MonoBehaviour
             maxX = Mathf.Max(maxX, targetX);
         }
 
-        // Store clean base position (NO shake contamination)
         basePosition = new Vector3(
             Mathf.Lerp(basePosition.x, maxX, smoothSpeed * Time.deltaTime),
             basePosition.y,
             transform.position.z
         );
 
-        // Shake
         Vector3 shake = Vector3.zero;
 
         if (shakeTime > 0f)
@@ -100,7 +113,95 @@ public class CameraController : MonoBehaviour
 
         UpdateWall();
         CheckPlayerCrossing();
+
+        if (waitingForSafeSpawn)
+        {
+            HandleSafeSpawnCheck();
+        }
+
+        PushCameraWhileShipBlocked();
     }
+
+    public bool IsShipBlockedByPlatform()
+    {
+        if (spaceShip.GetComponent<Collider2D>() == null) return false;
+        return spaceShip.GetComponent<Collider2D>().IsTouchingLayers(platformMask);
+    }
+
+    public void PushCameraWhileShipBlocked()
+    {
+        if (shipDetector == null) return;
+
+        if (shipDetector.isCollidingWithPlatform)
+        {
+            maxX += shipPushSpeed * Time.deltaTime;
+        }
+    }
+
+    public void PushCameraUntilShipIsFree()
+    {
+        if (spaceShip.GetComponent<Collider2D>() == null) return;
+
+        if (shipPushRoutine != null)
+            StopCoroutine(shipPushRoutine);
+
+        shipPushRoutine = StartCoroutine(PushUntilFree());
+    }
+
+    IEnumerator PushUntilFree()
+    {
+        while (spaceShip.GetComponent<Collider2D>() != null && spaceShip.GetComponent<Collider2D>().IsTouchingLayers(platformMask))
+        {
+            maxX += shipPushSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        shipPushRoutine = null;
+    }
+
+    void HandleSafeSpawnCheck()
+    {
+        if (spaceShip.GetComponent<Collider2D>() == null) return;
+
+        // If still colliding, push camera right
+        if (spaceShip.GetComponent<Collider2D>().IsTouchingLayers(platformMask))
+        {
+            maxX += shipPushSpeed * Time.deltaTime;
+            return;
+        }
+
+        // When no longer colliding -> allow spawn
+        waitingForSafeSpawn = false;
+
+        onSafeSpawnReady?.Invoke();
+        onSafeSpawnReady = null;
+    }
+
+    #region Ship collision push
+
+    public void ResolveShipCollisionAfterSpawn()
+    {
+        if (spaceShip.GetComponent<Collider2D>() == null) return;
+
+        if (shipPushRoutine != null)
+            StopCoroutine(shipPushRoutine);
+
+        shipPushRoutine = StartCoroutine(PushShipOutOfPlatform());
+    }
+
+    IEnumerator PushShipOutOfPlatform()
+    {
+        // Keep pushing camera right while ship is still colliding with platforms
+        while (spaceShip.GetComponent<Collider2D>() != null && spaceShip.GetComponent<Collider2D>().IsTouchingLayers(platformMask))
+        {
+            maxX += shipPushSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        shipPushRoutine = null;
+    }
+
+    #endregion
 
     #region Wall
 
@@ -109,7 +210,6 @@ public class CameraController : MonoBehaviour
         GameObject wall = new GameObject("CameraWall");
         wall.transform.parent = transform;
 
-        // Assign CameraWall layer
         wall.layer = LayerMask.NameToLayer("CameraWall");
 
         wallCollider = wall.AddComponent<BoxCollider2D>();
@@ -138,7 +238,7 @@ public class CameraController : MonoBehaviour
     {
         if (player == null || currentPlayer == null) return;
 
-        playerIsPastWall = player.position.x < wallX;
+        bool playerIsPastWall = player.position.x < wallX;
 
         if (playerIsPastWall && currentPlayer.IsSticking())
         {
@@ -149,12 +249,18 @@ public class CameraController : MonoBehaviour
     IEnumerator KillAfterDelay()
     {
         yield return new WaitForSeconds(1f);
-        
+
         if (currentPlayer != null)
         {
             currentPlayer.GetComponent<PlayerController>().isInvulnerable = false;
             currentPlayer.Die();
         }
+    }
+
+    public void RequestSafeSpawn(System.Action callback)
+    {
+        onSafeSpawnReady = callback;
+        waitingForSafeSpawn = true;
     }
 
     #endregion

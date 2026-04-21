@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public CapsuleCollider2D capsuleCollider;
     public BoxCollider2D boxCollider;
     public BoxCollider2D boxCollider2;
+    public BoxCollider2D boxColliderDeadSpikes;
 
     #endregion
 
@@ -395,6 +396,8 @@ public class PlayerController : MonoBehaviour
 
         GameManager.Instance.PlayerDied();
 
+        cameraController?.Shake(0.25f, 0.25f);
+
         Destroy(this);
     }
 
@@ -439,6 +442,8 @@ public class PlayerController : MonoBehaviour
 
         GameManager.Instance.PlayerDied();
 
+        cameraController?.Shake(0.25f, 0.25f);
+
         Destroy(this);
     }
 
@@ -448,6 +453,8 @@ public class PlayerController : MonoBehaviour
         Instantiate(deadParticle, transform.position, Quaternion.identity);
 
         GameManager.Instance.PlayerDied();
+
+        cameraController?.Shake(0.35f, 0.35f);
 
         Destroy(gameObject);
     }
@@ -491,6 +498,33 @@ public class PlayerController : MonoBehaviour
         cameraController?.Shake(0.35f, 0.35f);
 
         Destroy(this);
+    }
+
+    public void SetDeadBySpikes()
+    {
+        // Disable normal colliders
+        capsuleCollider.enabled = false;
+        boxCollider.enabled = false;
+        boxCollider2.enabled = false;
+
+        // Enable special corpse collider
+        if (boxColliderDeadSpikes != null)
+            boxColliderDeadSpikes.enabled = true;
+
+        // Physics setup for corpse
+        rb.velocity = Vector2.zero;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+
+        // Visual / identity change
+        gameObject.tag = "Platform";
+        gameObject.layer = LayerMask.NameToLayer("Platform");
+
+        spriteRenderer.sortingOrder = -1;
+
+        // Optional: stop control systems
+        canDamageEnemies = false;
+        controlsLocked = true;
     }
 
     #endregion
