@@ -59,15 +59,15 @@ Shader "Custom/VHS"
 
                 float2 uv = i.uv;
 
-                // Horizontal VHS distortion
-                float distortion = sin(uv.y * 50 + time * 5) * _Distortion;
+                // Softer VHS distortion
+                float distortion = sin(uv.y * 10 + time * 1.5) * _Distortion;
                 uv.x += distortion;
 
                 // Noise
                 float noise = rand(uv + time) * _Noise;
 
-                // Scanlines
-                float scan = sin(uv.y * _Scanline) * 0.04;
+                // Softer scanlines
+                float scan = sin(uv.y * _Scanline) * 0.01;
 
                 // RGB Shift
                 float r = tex2D(_MainTex, uv + float2(_RGBShift, 0)).r;
