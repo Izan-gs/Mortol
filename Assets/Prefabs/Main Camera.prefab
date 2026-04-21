@@ -269,7 +269,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.004, y: 0.02}
+  m_Offset: {x: -0.053841352, y: 0.12562978}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -280,7 +280,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.3, y: 0.16}
+  m_Size: {x: 1.8923173, y: 1.0308554}
   m_EdgeRadius: 0
 --- !u!50 &7192465598136339917
 Rigidbody2D:
@@ -305,10 +305,10 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!114 &6879341595276478359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,9 +321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a21c11d3879a7074eacf29725f596b0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformMask:
-    serializedVersion: 2
-    m_Bits: 0
+  isCollidingWithPlatform: 0
 --- !u!1001 &5716454688186374484
 PrefabInstance:
   m_ObjectHideFlags: 0

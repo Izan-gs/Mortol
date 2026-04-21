@@ -231,7 +231,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(moveInput.x * moveSpeed, rb.velocity.y);
 
         if (moveInput.x != 0 && !isStone)
-            transform.localScale = new Vector3(Mathf.Sign(moveInput.x) * 5f, 5f, 5f);
+            transform.localScale = new Vector3(Mathf.Sign(moveInput.x) * 1f, 1f, 1f);
     }
 
     #endregion

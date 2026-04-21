@@ -87,18 +87,24 @@ public class CameraController : MonoBehaviour
     private void HandleSafeSpawnMovement()
     {
         if (shipDetector == null)
-        {
-            Debug.LogError("ShipCollisionDetector missing on Space Ship.");
-            FinishSafeSpawn();
             return;
-        }
 
-        if (shipDetector.IsCollidingWithPlatform)
+        // ALWAYS force movement while blocked
+        if (shipDetector.isCollidingWithPlatform)
         {
             targetX += shipPushSpeed * Time.deltaTime;
+
+            // IMPORTANT: force instant camera follow (no smoothing delay blocking it)
+            basePosition = new Vector3(
+                targetX,
+                basePosition.y,
+                transform.position.z
+            );
+
             return;
         }
 
+        // ONLY when fully free
         FinishSafeSpawn();
     }
 
@@ -129,10 +135,8 @@ public class CameraController : MonoBehaviour
 
     private void ApplyCameraPosition()
     {
-        float t = smoothSpeed * Time.deltaTime;
-
         basePosition = new Vector3(
-            Mathf.Lerp(basePosition.x, targetX, t),
+            targetX,
             basePosition.y,
             transform.position.z
         );
