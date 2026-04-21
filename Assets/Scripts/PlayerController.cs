@@ -356,6 +356,7 @@ public class PlayerController : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Static;
         gameObject.layer = LayerMask.NameToLayer("Platform");
         gameObject.tag = "Platform";
+        GameManager.Instance.PlayerDied();
     }
 
     void StartStick()
@@ -393,12 +394,14 @@ public class PlayerController : MonoBehaviour
 
         lockYPosition = false;
 
-        gameObject.layer = LayerMask.NameToLayer("Player");
+        gameObject.layer = LayerMask.NameToLayer("Platform");
 
         if (anim) anim.SetTrigger(CrashHash);
 
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
+
+        GameManager.Instance.PlayerDied();
 
         Destroy(this);
     }

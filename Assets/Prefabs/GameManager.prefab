@@ -44,4 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d0da4a55c950564b909a14808a6ae25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScore: 0
+  playerLives: 5
+  shipTransform: {fileID: 0}
+  playerPrefab: {fileID: 5772519039162997485, guid: 0bd85b46dfd2e824f88fd4d6c233a0c6, type: 3}
