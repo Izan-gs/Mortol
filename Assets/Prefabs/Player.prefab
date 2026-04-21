@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 5705959649907926592}
   - component: {fileID: 291016830041690806}
   - component: {fileID: 7092782372143460757}
+  - component: {fileID: 6327743858046608599}
   - component: {fileID: 9027364677437570473}
   - component: {fileID: 6945780244472916280}
   - component: {fileID: 1229570271568408837}
@@ -155,8 +156,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0004941821, y: 0.0000043809414}
-  m_Size: {x: 0.10197673, y: 0.16146284}
+  m_Offset: {x: -0.0004941821, y: 0.00083278416}
+  m_Size: {x: 0.10197673, y: 0.15980609}
   m_Direction: 0
 --- !u!61 &7092782372143460757
 BoxCollider2D:
@@ -188,9 +189,9 @@ BoxCollider2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
+  m_UsedByEffector: 1
   m_UsedByComposite: 0
-  m_Offset: {x: -0.016493905, y: 0.0001880601}
+  m_Offset: {x: -0.005898308, y: 0.0001880601}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -201,8 +202,27 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.1270122, y: 0.038977914}
+  m_Size: {x: 0.13912725, y: 0.038977914}
   m_EdgeRadius: 0
+--- !u!251 &6327743858046608599
+PlatformEffector2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5772519039162997485}
+  m_Enabled: 1
+  m_UseColliderMask: 1
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RotationalOffset: 0
+  m_UseOneWay: 1
+  m_UseOneWayGrouping: 0
+  m_SurfaceArc: 180
+  m_UseSideFriction: 0
+  m_UseSideBounce: 0
+  m_SideArc: 1
 --- !u!61 &9027364677437570473
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -422,6 +442,7 @@ MonoBehaviour:
   boxCollider: {fileID: 7092782372143460757}
   boxCollider2: {fileID: 9027364677437570473}
   explosionParticle: {fileID: 6104280663052025139, guid: cf1e9853146581042be2b9f61ea10d76, type: 3}
+  deadParticle: {fileID: 6493863498170319993, guid: d2ed4a019d849504b8346cbd747363ae, type: 3}
   moveSpeed: 5
   jumpForce: 12
   jumpCutMultiplier: 0.5
@@ -435,6 +456,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   canDamageEnemies: 0
+  isInvulnerable: 0
   parachuteFallSpeed: 0.7
   blinkInterval: 0.1
-  deadParticle: {fileID: 6493863498170319993, guid: d2ed4a019d849504b8346cbd747363ae, type: 3}

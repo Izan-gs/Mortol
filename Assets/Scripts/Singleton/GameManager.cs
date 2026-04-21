@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public int playerLives = 20;
 
     [Header("Spawn")]
-    public Transform shipTransform;
+    private Transform shipTransform;
     public GameObject playerPrefab;
 
     private GameObject currentPlayer;
@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        // Find Space Ship transform (safe version)
+        shipTransform = GameObject.Find("Space Ship")?.transform;
     }
 
     void Start()
@@ -39,6 +42,17 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("No lives left");
             return;
+        }
+
+        if (shipTransform == null)
+        {
+            shipTransform = GameObject.Find("Space Ship")?.transform;
+
+            if (shipTransform == null)
+            {
+                Debug.LogError("Ship transform missing!");
+                return;
+            }
         }
 
         playerLives--;

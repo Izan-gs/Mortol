@@ -165,5 +165,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c655ecb64a9e4e4d815b3b78492ac64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 0
+  spawnInterval: 3
   spawnUnitType: {fileID: 5562234095417645125, guid: eddace85c937b97488f55ef7b6a9e512, type: 3}
+  checkDistance: 1.5
+  platformLayer:
+    serializedVersion: 2
+    m_Bits: 8

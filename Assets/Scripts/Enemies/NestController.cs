@@ -1,59 +1,106 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NestController : MonoBehaviour
 {
-    protected const int MAX_KILLED_COUNT = 3; // Class variable
+    private const int MAX_KILLED_COUNT = 3;
+    private const float SPAWN_ANIMATION_DELAY = 0.5f;
 
-    private int deadUnitsCount; // Individually count for each one
-    private bool isAlive = true; // It can be death so nothing does
-    private bool isActive = true; // It can be inactive if there are blockers in front of it
-    private float timer; // Time running for spawns
+    [Header("Spawn Settings")]
+    [SerializeField] private float spawnInterval = 3f;
+    [SerializeField] private GameObject spawnUnitType;
 
-    [SerializeField] private int spawnInterval; // Interval between spawns
-    [SerializeField] private GameObject spawnUnitType; // Prefab
-    private Animator animator; // Animator reference
+    [Header("Detection")]
+    [SerializeField] private float frontCheckDistance = 1f;
+    [SerializeField] private LayerMask platformLayer;
+
+    private int deadUnitsCount;
+    private bool isAlive = true;
+    private bool isActive = true;
+
+    private float timer;
+    private Animator animator;
+
+    private readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[4];
 
     private void Awake()
     {
-        spawnInterval = 3;
         animator = GetComponent<Animator>();
     }
 
-    void Update()
+    private void Update()
     {
-        if (!isActive || !isAlive) return;
+        if (!isActive || !isAlive)
+            return;
 
         timer += Time.deltaTime;
 
         if (timer >= spawnInterval)
         {
-            StartCoroutine(SpawnCoroutine());
-            timer = 0;
+            timer -= spawnInterval;
+            TrySpawn();
         }
     }
 
-    // Coroutine to play animation before spawning
-    private IEnumerator SpawnCoroutine()
+    private void TrySpawn()
+    {
+        if (IsBlockedInFront())
+            return;
+
+        StartCoroutine(SpawnRoutine());
+    }
+
+    private IEnumerator SpawnRoutine()
     {
         animator.SetTrigger("Spawn");
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(SPAWN_ANIMATION_DELAY);
+
+        if (!isAlive || IsBlockedInFront())
+            yield break;
 
         Spawn();
     }
 
-    // Spawns the selected enemy type.
-    public void Spawn()
+    private void Spawn()
     {
-        GameObject bumblebeeObj = Instantiate(spawnUnitType, transform.position, Quaternion.identity);
+        if (spawnUnitType == null)
+            return;
 
-        BumblebeeController bee = bumblebeeObj.GetComponent<BumblebeeController>();
-        if (bee != null)
+        GameObject obj = Instantiate(spawnUnitType, transform.position, Quaternion.identity);
+
+        if (obj.TryGetComponent(out BumblebeeController bee))
         {
-            bee.Initialize(transform.right, gameObject); // Spawn direction
+            bee.Initialize(transform.right, gameObject);
         }
+    }
+
+    private bool IsBlockedInFront()
+    {
+        Vector2 origin = transform.position + transform.right * 0.25f;
+        Vector2 direction = transform.right;
+
+        int hitCount = Physics2D.RaycastNonAlloc(
+            origin,
+            direction,
+            hitBuffer,
+            frontCheckDistance,
+            platformLayer
+        );
+
+        Debug.DrawRay(origin, direction * frontCheckDistance, Color.red);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider2D col = hitBuffer[i].collider;
+
+            if (col == null || col.gameObject == gameObject)
+                continue;
+
+            return true;
+        }
+
+        return false;
     }
 
     public void IncrementDeadUnits()
@@ -64,10 +111,5 @@ public class NestController : MonoBehaviour
         {
             isAlive = false;
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Check for player stone ritual in front of it then isAlive = false;
     }
 }

@@ -4,72 +4,103 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Components
+
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
     private CameraController cameraController;
 
+    #endregion
+
+    #region Colliders
+
     [Header("Colliders")]
     public CapsuleCollider2D capsuleCollider;
     public BoxCollider2D boxCollider;
     public BoxCollider2D boxCollider2;
-    private BoxCollider2D cameraWallCollider;
+
+    #endregion
+
+    #region FX
 
     [Header("FX")]
     public GameObject explosionParticle;
+    [SerializeField] private GameObject deadParticle;
+
+    #endregion
 
     #region Movement
+
+    [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
+
+    private Vector2 moveInput;
     private float lockedY;
     private bool lockYPosition;
-    private Vector2 moveInput;
+
     #endregion
 
     #region Jump
+
+    [Header("Jump")]
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float jumpCutMultiplier = 0.5f;
     [SerializeField] private float fallMultiplier = 2.5f;
     [SerializeField] private float lowJumpMultiplier = 2f;
 
     private bool isJumping;
+
     #endregion
 
     #region Jump Assist
+
+    [Header("Jump Assist")]
     [SerializeField] private float coyoteTime = 0.1f;
     [SerializeField] private float jumpBufferTime = 0.1f;
 
     private float coyoteCounter;
     private float bufferCounter;
+
     #endregion
 
     #region Ground
+
+    [Header("Ground")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
     private bool grounded;
+
     #endregion
 
     #region State
+
     private bool isStone;
     private bool wasFallingStone;
     private bool isStuck;
     private bool isSticking;
-    public bool canDamageEnemies = false;
     private bool controlsLocked;
+
+    public bool canDamageEnemies;
+    public bool isInvulnerable;
+
     #endregion
 
     #region Parachute
+
+    [Header("Parachute")]
     [SerializeField] private float parachuteFallSpeed = 0.7f;
+    [SerializeField] private float blinkInterval = 0.1f;
+
     private bool isParachuting;
     private Coroutine blinkCoroutine;
-    [SerializeField] private float blinkInterval = 0.1f;
+
     #endregion
 
-    [Header("FX")]
-    [SerializeField] private GameObject deadParticle;
-
     #region Animator Hashes
+
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
     private static readonly int GroundedHash = Animator.StringToHash("IsGrounded");
     private static readonly int StoneHash = Animator.StringToHash("Stone");
@@ -80,13 +111,24 @@ public class PlayerController : MonoBehaviour
     private static readonly int CrashHash = Animator.StringToHash("Crash");
     private static readonly int DieHash = Animator.StringToHash("Die");
     private static readonly int ParachuteHash = Animator.StringToHash("Parachute");
+
+    #endregion
+
+    #region Layers
+
+    private int playerLayer;
+    private int enemyLayer;
+    private int platformLayer;
+    private int stickingLayer;
+
     #endregion
 
     private float animSpeed;
 
     public bool IsSticking() => isSticking;
     public bool IsStoneFalling() => isStone && wasFallingStone;
-    public bool isInvulnerable;
+
+    #region Unity
 
     private void Awake()
     {
@@ -95,8 +137,10 @@ public class PlayerController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         cameraController = FindAnyObjectByType<CameraController>();
 
-        int playerLayer = LayerMask.NameToLayer("Player");
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        playerLayer = LayerMask.NameToLayer("Player");
+        enemyLayer = LayerMask.NameToLayer("Enemy");
+        platformLayer = LayerMask.NameToLayer("Platform");
+        stickingLayer = LayerMask.NameToLayer("PlayerSticking");
 
         Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
     }
@@ -116,23 +160,20 @@ public class PlayerController : MonoBehaviour
             Move();
 
         if (isParachuting)
-        {
             rb.velocity = new Vector2(rb.velocity.x, -parachuteFallSpeed);
-        }
 
         ApplyBetterJump();
 
         if (lockYPosition)
         {
-            transform.position = new Vector3(
-                transform.position.x,
-                lockedY,
-                transform.position.z
-            );
-
+            transform.position = new Vector3(transform.position.x, lockedY, transform.position.z);
             rb.velocity = new Vector2(rb.velocity.x, 0f);
         }
     }
+
+    #endregion
+
+    #region Parachute
 
     public void StartParachute()
     {
@@ -140,12 +181,9 @@ public class PlayerController : MonoBehaviour
         isInvulnerable = true;
         controlsLocked = true;
 
-        int playerLayer = LayerMask.NameToLayer("Player");
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
-
         Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
 
-        if (anim) anim.SetTrigger(ParachuteHash);
+        anim?.SetTrigger(ParachuteHash);
 
         rb.velocity = Vector2.zero;
 
@@ -166,22 +204,27 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.enabled = true;
     }
 
-    #region Animator
-    void UpdateAnimator()
+    void StopParachute()
     {
-        if (!anim) return;
+        isParachuting = false;
+        isInvulnerable = false;
+        controlsLocked = false;
 
-        float targetSpeed = Mathf.Abs(moveInput.x);
-        animSpeed = Mathf.Lerp(animSpeed, targetSpeed, 0.15f);
+        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
 
-        anim.SetFloat(SpeedHash, animSpeed);
-        anim.SetBool(GroundedHash, grounded);
-        anim.SetBool(StuckHash, isStuck);
-        anim.SetBool(StickHash, isSticking);
+        if (blinkCoroutine != null)
+        {
+            StopCoroutine(blinkCoroutine);
+            blinkCoroutine = null;
+        }
+
+        spriteRenderer.enabled = true;
     }
+
     #endregion
 
     #region Movement
+
     void Move()
     {
         rb.velocity = new Vector2(moveInput.x * moveSpeed, rb.velocity.y);
@@ -189,9 +232,11 @@ public class PlayerController : MonoBehaviour
         if (moveInput.x != 0 && !isStone)
             transform.localScale = new Vector3(Mathf.Sign(moveInput.x) * 5f, 5f, 5f);
     }
+
     #endregion
 
-    #region Ground & Jump
+    #region Ground
+
     void CheckGround()
     {
         grounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
@@ -201,26 +246,13 @@ public class PlayerController : MonoBehaviour
             wasFallingStone = false;
 
             if (isParachuting)
-            {
-                isParachuting = false;
-                isInvulnerable = false;
-                controlsLocked = false;
-
-                int playerLayer = LayerMask.NameToLayer("Player");
-                int enemyLayer = LayerMask.NameToLayer("Enemy");
-
-                Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
-
-                if (blinkCoroutine != null)
-                {
-                    StopCoroutine(blinkCoroutine);
-                    blinkCoroutine = null;
-                }
-
-                spriteRenderer.enabled = true;
-            }
+                StopParachute();
         }
     }
+
+    #endregion
+
+    #region Jump
 
     void HandleJumpAssist()
     {
@@ -240,11 +272,13 @@ public class PlayerController : MonoBehaviour
         coyoteCounter = 0f;
         isJumping = true;
 
-        if (anim) anim.SetTrigger(JumpHash);
+        anim?.SetTrigger(JumpHash);
     }
+
     #endregion
 
     #region Physics
+
     void ApplyBetterJump()
     {
         if (rb.velocity.y < 0)
@@ -256,9 +290,28 @@ public class PlayerController : MonoBehaviour
             rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
         }
     }
+
+    #endregion
+
+    #region Animator
+
+    void UpdateAnimator()
+    {
+        if (!anim) return;
+
+        float targetSpeed = Mathf.Abs(moveInput.x);
+        animSpeed = Mathf.Lerp(animSpeed, targetSpeed, 0.15f);
+
+        anim.SetFloat(SpeedHash, animSpeed);
+        anim.SetBool(GroundedHash, grounded);
+        anim.SetBool(StuckHash, isStuck);
+        anim.SetBool(StickHash, isSticking);
+    }
+
     #endregion
 
     #region Input
+
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
@@ -269,24 +322,7 @@ public class PlayerController : MonoBehaviour
         if (context.performed)
         {
             if (isParachuting)
-            {
-                isParachuting = false;
-                isInvulnerable = false;
-                controlsLocked = false;
-
-                int playerLayer = LayerMask.NameToLayer("Player");
-                int enemyLayer = LayerMask.NameToLayer("Enemy");
-
-                Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
-
-                if (blinkCoroutine != null)
-                {
-                    StopCoroutine(blinkCoroutine);
-                    blinkCoroutine = null;
-                }
-
-                spriteRenderer.enabled = true;
-            }
+                StopParachute();
 
             bufferCounter = jumpBufferTime;
             isJumping = true;
@@ -316,9 +352,11 @@ public class PlayerController : MonoBehaviour
         if (context.performed && !controlsLocked)
             StartStick();
     }
+
     #endregion
 
     #region Mechanics
+
     void TurnToStone()
     {
         if (isStone) return;
@@ -326,19 +364,15 @@ public class PlayerController : MonoBehaviour
         isStone = true;
         isSticking = false;
         isInvulnerable = true;
-
         canDamageEnemies = true;
-
         wasFallingStone = true;
 
-        if (anim) anim.SetTrigger(StoneHash);
+        anim?.SetTrigger(StoneHash);
 
         capsuleCollider.enabled = false;
         boxCollider2.enabled = true;
 
         rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-
         rb.AddForce(Vector2.down * 5f, ForceMode2D.Impulse);
 
         StartCoroutine(FreezeWhenGrounded());
@@ -352,11 +386,16 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(0.05f);
 
         canDamageEnemies = false;
+
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
-        gameObject.layer = LayerMask.NameToLayer("Platform");
+
+        gameObject.layer = platformLayer;
         gameObject.tag = "Platform";
+
         GameManager.Instance.PlayerDied();
+
+        Destroy(this);
     }
 
     void StartStick()
@@ -364,14 +403,12 @@ public class PlayerController : MonoBehaviour
         if (isStone || isStuck || isSticking) return;
 
         isSticking = true;
-        isJumping = false;
         isInvulnerable = true;
-
         canDamageEnemies = true;
 
-        gameObject.layer = LayerMask.NameToLayer("PlayerSticking");
+        gameObject.layer = stickingLayer;
 
-        if (anim) anim.SetTrigger(TorpedoHash);
+        anim?.SetTrigger(TorpedoHash);
 
         capsuleCollider.enabled = false;
         boxCollider.enabled = true;
@@ -389,14 +426,13 @@ public class PlayerController : MonoBehaviour
     {
         isSticking = false;
         isStuck = true;
-
         canDamageEnemies = false;
 
         lockYPosition = false;
 
-        gameObject.layer = LayerMask.NameToLayer("Platform");
+        gameObject.layer = platformLayer;
 
-        if (anim) anim.SetTrigger(CrashHash);
+        anim?.SetTrigger(CrashHash);
 
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
@@ -415,21 +451,23 @@ public class PlayerController : MonoBehaviour
 
         Destroy(gameObject);
     }
+
     #endregion
 
     #region Collision
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isSticking) return;
 
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Platform"))
-        {
+        if (collision.gameObject.layer == platformLayer)
             Stick();
-        }
     }
+
     #endregion
 
     #region Death
+
     public void Die()
     {
         if (isInvulnerable) return;
@@ -437,15 +475,12 @@ public class PlayerController : MonoBehaviour
         moveInput = Vector2.zero;
         rb.velocity = Vector2.zero;
 
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
-        int otherPlayerLayer = LayerMask.NameToLayer("Player");
-
-        // Add layers to Rigidbody2D exclusion list
-        rb.excludeLayers = (1 << enemyLayer) | (1 << otherPlayerLayer);
+        // Ignore collisions between Player and Enemy layers
+        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
 
         gameObject.tag = "Untagged";
 
-        if (anim) anim.SetTrigger(DieHash);
+        anim?.SetTrigger(DieHash);
 
         spriteRenderer.sortingOrder = -1;
 
@@ -453,12 +488,10 @@ public class PlayerController : MonoBehaviour
 
         GameManager.Instance.PlayerDied();
 
-        if (cameraController != null)
-        {
-            cameraController.Shake(0.35f, 0.35f);
-        }
+        cameraController?.Shake(0.35f, 0.35f);
 
         Destroy(this);
     }
+
     #endregion
 }
