@@ -110,15 +110,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   smoothSpeed: 5
   offsetX: 2
+  shipPushSpeed: 6
   wallOffset: 9.3
   wallHeight: 14
   wallThickness: 1
-  shipPushSpeed: 6
-  platformMask:
-    serializedVersion: 2
-    m_Bits: 8
   spaceShip: {fileID: 6426261097936423698}
-  shipDetector: {fileID: 0}
 --- !u!114 &1028171420774918817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,7 +159,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -7.8, y: 4.2, z: 10}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5829342311148895630}
@@ -325,7 +321,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a21c11d3879a7074eacf29725f596b0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isCollidingWithPlatform: 0
+  platformMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1001 &5716454688186374484
 PrefabInstance:
   m_ObjectHideFlags: 0
