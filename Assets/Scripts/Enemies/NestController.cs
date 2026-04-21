@@ -13,45 +13,49 @@ public class NestController : MonoBehaviour
 
     [SerializeField] private int spawnInterval; // Interval between spawns
     [SerializeField] private GameObject spawnUnitType; // Prefab
+    private Animator animator; // Animator reference
 
-    //
     private void Awake()
     {
         spawnInterval = 3;
+        animator = GetComponent<Animator>();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    // Calls Spawn in the chosen interval
     void Update()
     {
-        // Encontrar otra forma de desactivarlo correctamente!
         if (!isActive || !isAlive) return;
 
         timer += Time.deltaTime;
 
         if (timer >= spawnInterval)
         {
-            Spawn();
+            StartCoroutine(SpawnCoroutine());
             timer = 0;
         }
     }
+
+    // Coroutine to play animation before spawning
+    private IEnumerator SpawnCoroutine()
+    {
+        animator.SetTrigger("Spawn");
+
+        yield return new WaitForSeconds(0.5f);
+
+        Spawn();
+    }
+
     // Spawns the selected enemy type.
     public void Spawn()
     {
         GameObject bumblebeeObj = Instantiate(spawnUnitType, transform.position, Quaternion.identity);
-        Enemy enemy = bumblebeeObj.GetComponent<Enemy>();
-        if(enemy != null)
+
+        BumblebeeController bee = bumblebeeObj.GetComponent<BumblebeeController>();
+        if (bee != null)
         {
-            enemy.onDie.AddListener(IncrementDeadUnits);
+            bee.Initialize(transform.right, gameObject); // Spawn direction
         }
     }
-    // The nest dies when player kills MAX_KILLED_COUNT units from nest.
+
     public void IncrementDeadUnits()
     {
         deadUnitsCount++;
@@ -61,7 +65,7 @@ public class NestController : MonoBehaviour
             isAlive = false;
         }
     }
-    // 
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Check for player stone ritual in front of it then isAlive = false;

@@ -313,6 +313,8 @@ public class PlayerController : MonoBehaviour
         Instantiate(explosionParticle, transform.position, Quaternion.identity);
         Instantiate(deadParticle, transform.position, Quaternion.identity);
 
+        GameManager.Instance.PlayerDied();
+
         Destroy(gameObject);
     }
     #endregion
@@ -351,6 +353,9 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.sortingOrder = -1;
 
         canDamageEnemies = false;
+
+        GameManager.Instance.PlayerDied();
+
         Destroy(this);
     }
     #endregion
