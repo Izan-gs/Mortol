@@ -3473,6 +3473,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7352703182427435167, guid: 05e4b72ae068f724191d1643b70e18ca, type: 3}
   m_PrefabInstance: {fileID: 1020194651}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1024321660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1024321661}
+  m_Layer: 0
+  m_Name: Bricks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1024321661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024321660}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.5805035, y: -1.0083853, z: -0.04299247}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1048649924
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19339,3 +19370,4 @@ SceneRoots:
   - {fileID: 332016746}
   - {fileID: 609286348}
   - {fileID: 1857208004}
+  - {fileID: 1024321661}
