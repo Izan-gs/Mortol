@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public CapsuleCollider2D capsuleCollider;
     public BoxCollider2D boxCollider;
     public BoxCollider2D boxCollider2;
+    private BoxCollider2D cameraWallCollider;
 
     [Header("FX")]
     public GameObject explosionParticle;
@@ -54,6 +55,14 @@ public class PlayerController : MonoBehaviour
     private bool isStuck;
     private bool isSticking;
     public bool canDamageEnemies = false;
+    private bool controlsLocked;
+    #endregion
+
+    #region Parachute
+    [SerializeField] private float parachuteFallSpeed = 0.7f;
+    private bool isParachuting;
+    private Coroutine blinkCoroutine;
+    [SerializeField] private float blinkInterval = 0.1f;
     #endregion
 
     [Header("FX")]
@@ -69,13 +78,14 @@ public class PlayerController : MonoBehaviour
     private static readonly int TorpedoHash = Animator.StringToHash("Torpedo");
     private static readonly int CrashHash = Animator.StringToHash("Crash");
     private static readonly int DieHash = Animator.StringToHash("Die");
+    private static readonly int ParachuteHash = Animator.StringToHash("Parachute");
     #endregion
 
     private float animSpeed;
 
     public bool IsSticking() => isSticking;
     public bool IsStoneFalling() => isStone && wasFallingStone;
-    private bool isInvulnerable;
+    public bool isInvulnerable;
 
     private void Awake()
     {
@@ -103,9 +113,13 @@ public class PlayerController : MonoBehaviour
         if (!isSticking)
             Move();
 
+        if (isParachuting)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, -parachuteFallSpeed);
+        }
+
         ApplyBetterJump();
 
-        // Keep Y fixed while sticking
         if (lockYPosition)
         {
             transform.position = new Vector3(
@@ -116,6 +130,38 @@ public class PlayerController : MonoBehaviour
 
             rb.velocity = new Vector2(rb.velocity.x, 0f);
         }
+    }
+
+    public void StartParachute()
+    {
+        isParachuting = true;
+        isInvulnerable = true;
+        controlsLocked = true;
+
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+
+        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+
+        if (anim) anim.SetTrigger(ParachuteHash);
+
+        rb.velocity = Vector2.zero;
+
+        if (blinkCoroutine != null)
+            StopCoroutine(blinkCoroutine);
+
+        blinkCoroutine = StartCoroutine(BlinkWhileParachuting());
+    }
+
+    IEnumerator BlinkWhileParachuting()
+    {
+        while (isParachuting)
+        {
+            spriteRenderer.enabled = !spriteRenderer.enabled;
+            yield return new WaitForSeconds(blinkInterval);
+        }
+
+        spriteRenderer.enabled = true;
     }
 
     #region Animator
@@ -151,6 +197,26 @@ public class PlayerController : MonoBehaviour
         if (grounded)
         {
             wasFallingStone = false;
+
+            if (isParachuting)
+            {
+                isParachuting = false;
+                isInvulnerable = false;
+                controlsLocked = false;
+
+                int playerLayer = LayerMask.NameToLayer("Player");
+                int enemyLayer = LayerMask.NameToLayer("Enemy");
+
+                Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+
+                if (blinkCoroutine != null)
+                {
+                    StopCoroutine(blinkCoroutine);
+                    blinkCoroutine = null;
+                }
+
+                spriteRenderer.enabled = true;
+            }
         }
     }
 
@@ -200,6 +266,26 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
+            if (isParachuting)
+            {
+                isParachuting = false;
+                isInvulnerable = false;
+                controlsLocked = false;
+
+                int playerLayer = LayerMask.NameToLayer("Player");
+                int enemyLayer = LayerMask.NameToLayer("Enemy");
+
+                Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+
+                if (blinkCoroutine != null)
+                {
+                    StopCoroutine(blinkCoroutine);
+                    blinkCoroutine = null;
+                }
+
+                spriteRenderer.enabled = true;
+            }
+
             bufferCounter = jumpBufferTime;
             isJumping = true;
         }
@@ -213,17 +299,20 @@ public class PlayerController : MonoBehaviour
 
     public void OnStone(InputAction.CallbackContext context)
     {
-        if (context.performed) TurnToStone();
+        if (context.performed && !controlsLocked)
+            TurnToStone();
     }
 
     public void OnExplode(InputAction.CallbackContext context)
     {
-        if (context.performed) Explode();
+        if (context.performed && !controlsLocked)
+            Explode();
     }
 
     public void OnStick(InputAction.CallbackContext context)
     {
-        if (context.performed) StartStick();
+        if (context.performed && !controlsLocked)
+            StartStick();
     }
     #endregion
 
@@ -277,6 +366,8 @@ public class PlayerController : MonoBehaviour
 
         canDamageEnemies = true;
 
+        gameObject.layer = LayerMask.NameToLayer("PlayerSticking");
+
         if (anim) anim.SetTrigger(TorpedoHash);
 
         capsuleCollider.enabled = false;
@@ -299,6 +390,8 @@ public class PlayerController : MonoBehaviour
         canDamageEnemies = false;
 
         lockYPosition = false;
+
+        gameObject.layer = LayerMask.NameToLayer("Player");
 
         if (anim) anim.SetTrigger(CrashHash);
 
@@ -339,12 +432,11 @@ public class PlayerController : MonoBehaviour
         moveInput = Vector2.zero;
         rb.velocity = Vector2.zero;
 
-        int playerLayer = gameObject.layer;
         int enemyLayer = LayerMask.NameToLayer("Enemy");
         int otherPlayerLayer = LayerMask.NameToLayer("Player");
 
-        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
-        Physics2D.IgnoreLayerCollision(playerLayer, otherPlayerLayer, true);
+        // Add layers to Rigidbody2D exclusion list
+        rb.excludeLayers = (1 << enemyLayer) | (1 << otherPlayerLayer);
 
         gameObject.tag = "Untagged";
 

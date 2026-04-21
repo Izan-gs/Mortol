@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("Lives")]
-    public int playerLives = 5;
+    public int playerLives = 20;
 
     [Header("Spawn")]
     public Transform shipTransform;
@@ -37,13 +37,23 @@ public class GameManager : MonoBehaviour
     {
         if (playerLives <= 0)
         {
-            Debug.Log("No lives left"); // Implementar aquí el activar la UI de muerte
+            Debug.Log("No lives left");
             return;
         }
 
         playerLives--;
 
         currentPlayer = Instantiate(playerPrefab, shipTransform.position, Quaternion.identity);
+
+        PlayerController player = currentPlayer.GetComponent<PlayerController>();
+        player.StartParachute();
+
+        // Register player to camera
+        CameraController cam = Camera.main.GetComponent<CameraController>();
+        if (cam != null)
+        {
+            cam.SetTarget(currentPlayer.transform);
+        }
     }
 
     public void PlayerDied()

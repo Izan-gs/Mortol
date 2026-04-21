@@ -109,8 +109,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 321176735
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: -23708268, guid: 49ce21a3d9fb74440b656924fe381eea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -434,4 +434,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  canDamageEnemies: 0
+  parachuteFallSpeed: 0.7
+  blinkInterval: 0.1
   deadParticle: {fileID: 6493863498170319993, guid: d2ed4a019d849504b8346cbd747363ae, type: 3}
