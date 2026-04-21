@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,26 +9,27 @@ public class GameManager : MonoBehaviour
     public int playerLives = 20;
 
     [Header("Spawn")]
-    private Transform shipTransform;
-    public GameObject playerPrefab;
+    [SerializeField] private GameObject playerPrefab;
 
+    private Transform shipTransform;
     private GameObject currentPlayer;
-    private bool firstSpawnDone = false;
+    private bool firstSpawnDone;
+    private bool respawnQueued;
 
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Avoid deleting when changing scene
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
+            return;
         }
 
-        // Find Space Ship transform (safe version)
-        shipTransform = GameObject.Find("Space Ship")?.transform;
+        CacheShipTransform();
     }
 
     void Start()
@@ -45,63 +45,49 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        CameraController cam = Camera.main.GetComponent<CameraController>();
+        CameraController cam = GetCameraController();
         if (cam == null)
         {
-            Debug.LogError("Camera missing!");
+            Debug.LogError("CameraController missing!");
+            return;
+        }
+
+        if (!firstSpawnDone)
+        {
+            firstSpawnDone = true;
+            SpawnPlayerNow(cam);
+            return;
+        }
+
+        cam.RequestSafeSpawn(() => SpawnPlayerNow(cam));
+    }
+
+    private void SpawnPlayerNow(CameraController cam)
+    {
+        if (playerLives <= 0)
+        {
+            Debug.Log("No lives left");
+            return;
+        }
+
+        CacheShipTransform();
+
+        if (shipTransform == null)
+        {
+            Debug.LogError("Ship transform missing!");
             return;
         }
 
         playerLives--;
 
-        // FIRST SPAWN = instant
-        if (!firstSpawnDone)
-        {
-            firstSpawnDone = true;
-            DoSpawnPlayer();
-            return;
-        }
-
-        StartCoroutine(SafeSpawnRoutine(cam));
-    }
-
-    IEnumerator SafeSpawnRoutine(CameraController cam)
-    {
-        ShipCollisionDetector detector = cam.GetComponentInChildren<ShipCollisionDetector>();
-
-        if (detector == null)
-        {
-            Debug.LogError("Ship detector missing!");
-            yield break;
-        }
-
-        while (detector.isCollidingWithPlatform)
-        {
-            yield return null;
-        }
-
-        DoSpawnPlayer();
-    }
-
-    void DoSpawnPlayer()
-    {
-        if (shipTransform == null)
-        {
-            shipTransform = GameObject.Find("Space Ship")?.transform;
-
-            if (shipTransform == null)
-            {
-                Debug.LogError("Ship transform missing!");
-                return;
-            }
-        }
-
         currentPlayer = Instantiate(playerPrefab, shipTransform.position, Quaternion.identity);
 
         PlayerController player = currentPlayer.GetComponent<PlayerController>();
-        player.StartParachute();
+        if (player != null)
+        {
+            player.StartParachute();
+        }
 
-        CameraController cam = Camera.main.GetComponent<CameraController>();
         if (cam != null)
         {
             cam.SetTarget(currentPlayer.transform);
@@ -110,12 +96,33 @@ public class GameManager : MonoBehaviour
 
     public void PlayerDied()
     {
+        if (respawnQueued)
+            return;
+
+        respawnQueued = true;
         StartCoroutine(RespawnCoroutine());
     }
 
-    IEnumerator RespawnCoroutine()
+    private IEnumerator RespawnCoroutine()
     {
         yield return new WaitForSeconds(1f);
+        respawnQueued = false;
         SpawnPlayer();
+    }
+
+    private void CacheShipTransform()
+    {
+        if (shipTransform != null)
+            return;
+
+        GameObject ship = GameObject.Find("Space Ship");
+        if (ship != null)
+            shipTransform = ship.transform;
+    }
+
+    private CameraController GetCameraController()
+    {
+        Camera mainCamera = Camera.main;
+        return mainCamera != null ? mainCamera.GetComponent<CameraController>() : null;
     }
 }

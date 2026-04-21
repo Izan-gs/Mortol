@@ -1,22 +1,40 @@
+using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class ShipCollisionDetector : MonoBehaviour
 {
-    public bool isCollidingWithPlatform;
+    [Header("Platform Mask")]
+    [SerializeField] private LayerMask platformMask;
 
-    void OnTriggerEnter2D(Collider2D other)
+    private Collider2D shipCollider;
+    private readonly List<Collider2D> overlaps = new List<Collider2D>(8);
+    private ContactFilter2D contactFilter;
+
+    public bool IsCollidingWithPlatform { get; private set; }
+
+    void Awake()
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Platform"))
+        shipCollider = GetComponent<Collider2D>();
+
+        if (platformMask.value == 0)
+            platformMask = LayerMask.GetMask("Platform");
+
+        contactFilter = new ContactFilter2D
         {
-            isCollidingWithPlatform = true;
-        }
+            useLayerMask = true,
+            layerMask = platformMask,
+            useTriggers = true
+        };
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    void Update()
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Platform"))
-        {
-            isCollidingWithPlatform = false;
-        }
+        if (shipCollider == null)
+            return;
+
+        overlaps.Clear();
+        shipCollider.OverlapCollider(contactFilter, overlaps);
+        IsCollidingWithPlatform = overlaps.Count > 0;
     }
 }
