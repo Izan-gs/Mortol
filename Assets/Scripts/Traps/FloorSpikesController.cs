@@ -5,7 +5,7 @@ using UnityEngine;
 public class FloorSpikesController : MonoBehaviour
 {
     [SerializeField] private float minFallSpeedToDie = 0.0f;
-
+    [SerializeField] private GameObject destroyParticle;
 
     // Detects if player collides from above and then player dies
     private void OnTriggerEnter2D(Collider2D collision)
@@ -25,6 +25,8 @@ public class FloorSpikesController : MonoBehaviour
         // STONE FALLING -> DESTROY SPIKE
         if (player.IsStoneFalling() && isFalling && fromAbove)
         {
+            Instantiate(destroyParticle, transform.position, Quaternion.identity);
+
             Destroy(gameObject); // spike breaks
             return;
         }

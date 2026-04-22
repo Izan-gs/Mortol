@@ -144,3 +144,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minFallSpeedToDie: 0.1
+  destroyParticle: {fileID: 6493863498170319993, guid: 9e776821be1ace94d9feb020c846d340, type: 3}

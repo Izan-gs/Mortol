@@ -157,7 +157,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isStuck) return;
 
-        if (!isSticking)
+        if (!isSticking && !isStone)
             Move();
 
         if (isParachuting)
@@ -482,8 +482,8 @@ public class PlayerController : MonoBehaviour
         moveInput = Vector2.zero;
         rb.velocity = Vector2.zero;
 
-        // Ignore collisions between Player and Enemy layers
-        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+        // Ignore Enemy layer using Rigidbody2D
+        rb.excludeLayers |= (1 << enemyLayer);
 
         gameObject.tag = "Untagged";
 
