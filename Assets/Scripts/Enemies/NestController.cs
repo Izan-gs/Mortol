@@ -18,6 +18,8 @@ public class NestController : MonoBehaviour
     private bool isAlive = true;
     private bool isActive = true;
 
+    private Vector2 FacingDirection => transform.localScale.x >= 0 ? Vector2.right : Vector2.left;
+
     private float timer;
     private Animator animator;
 
@@ -69,16 +71,27 @@ public class NestController : MonoBehaviour
 
         GameObject obj = Instantiate(spawnUnitType, transform.position, Quaternion.identity);
 
+        // Apply facing scale to spawned unit
+        Vector3 baseScale = obj.transform.localScale;
+
+        float dir = FacingDirection.x >= 0 ? 1f : -1f;
+
+        obj.transform.localScale = new Vector3(
+            Mathf.Abs(baseScale.x) * dir,
+            baseScale.y,
+            baseScale.z
+        );
+
         if (obj.TryGetComponent(out BumblebeeController bee))
         {
-            bee.Initialize(transform.right, gameObject);
+            bee.Initialize(FacingDirection, gameObject);
         }
     }
 
     private bool IsBlockedInFront()
     {
-        Vector2 origin = transform.position + transform.right * 0.25f;
-        Vector2 direction = transform.right;
+        Vector2 origin = (Vector2)transform.position + FacingDirection * 0.25f;
+        Vector2 direction = FacingDirection;
 
         int hitCount = Physics2D.RaycastNonAlloc(
             origin,
