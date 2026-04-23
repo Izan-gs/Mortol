@@ -60,11 +60,6 @@ public class CameraController : MonoBehaviour
 
         ApplyCameraPosition();
         UpdateWall();
-
-        if (!waitingForSafeSpawn)
-        {
-            CheckPlayerCrossing();
-        }
     }
 
     public void SetTarget(Transform newTarget)
@@ -217,29 +212,5 @@ public class CameraController : MonoBehaviour
 
         wallCollider.transform.position = new Vector2(wallX, transform.position.y);
         wallCollider.size = new Vector2(wallThickness, wallHeight);
-    }
-
-    private void CheckPlayerCrossing()
-    {
-        if (player == null || currentPlayer == null)
-            return;
-
-        bool playerIsPastWall = player.position.x < wallX;
-
-        if (playerIsPastWall && currentPlayer.IsSticking())
-        {
-            StartCoroutine(KillAfterDelay());
-        }
-    }
-
-    private IEnumerator KillAfterDelay()
-    {
-        yield return new WaitForSeconds(1f);
-
-        if (currentPlayer != null)
-        {
-            currentPlayer.GetComponent<PlayerController>().isInvulnerable = false;
-            currentPlayer.Die();
-        }
     }
 }

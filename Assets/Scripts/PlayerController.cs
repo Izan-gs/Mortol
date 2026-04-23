@@ -129,6 +129,9 @@ public class PlayerController : MonoBehaviour
     public bool IsSticking() => isSticking;
     public bool IsStoneFalling() => isStone && wasFallingStone;
 
+    private Coroutine stickTimeoutCoroutine;
+    private bool stuckToPlatform;
+
     #region Unity
 
     private void Awake()
@@ -240,7 +243,9 @@ public class PlayerController : MonoBehaviour
 
     void CheckGround()
     {
-        grounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, groundRadius, groundLayer);
+
+        grounded = hit.collider != null;
 
         if (grounded)
         {
@@ -362,15 +367,23 @@ public class PlayerController : MonoBehaviour
     {
         if (isStone) return;
 
-        isStone = true;
         isSticking = false;
+        isStuck = false;
+        lockYPosition = false;
+        rb.gravityScale = 1f;
+
+        isStone = true;
         isInvulnerable = true;
         canDamageEnemies = true;
         wasFallingStone = true;
 
+        int cameraWallLayer = LayerMask.NameToLayer("CameraWall");
+        Physics2D.IgnoreLayerCollision(stickingLayer, cameraWallLayer, false);
+
         anim?.SetTrigger(StoneHash);
 
         capsuleCollider.enabled = false;
+        boxCollider.enabled = false;
         boxCollider2.enabled = true;
 
         rb.velocity = Vector2.zero;
@@ -381,8 +394,14 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator FreezeWhenGrounded()
     {
-        while (!grounded)
+        float timer = 0f;
+        float maxWait = 2f;
+
+        while (!grounded && timer < maxWait)
+        {
+            timer += Time.deltaTime;
             yield return null;
+        }
 
         yield return new WaitForSeconds(0.05f);
 
@@ -408,8 +427,12 @@ public class PlayerController : MonoBehaviour
         isSticking = true;
         isInvulnerable = true;
         canDamageEnemies = true;
+        stuckToPlatform = false;
 
         gameObject.layer = stickingLayer;
+
+        int cameraWallLayer = LayerMask.NameToLayer("CameraWall");
+        Physics2D.IgnoreLayerCollision(stickingLayer, cameraWallLayer, true);
 
         anim?.SetTrigger(TorpedoHash);
 
@@ -423,6 +446,11 @@ public class PlayerController : MonoBehaviour
 
         lockedY = transform.position.y;
         lockYPosition = true;
+
+        if (stickTimeoutCoroutine != null)
+            StopCoroutine(stickTimeoutCoroutine);
+
+        stickTimeoutCoroutine = StartCoroutine(StickTimeout());
     }
 
     void Stick()
@@ -431,7 +459,15 @@ public class PlayerController : MonoBehaviour
         isStuck = true;
         canDamageEnemies = false;
 
+        stuckToPlatform = true;
+
         lockYPosition = false;
+
+        if (stickTimeoutCoroutine != null)
+        {
+            StopCoroutine(stickTimeoutCoroutine);
+            stickTimeoutCoroutine = null;
+        }
 
         gameObject.layer = platformLayer;
 
@@ -440,6 +476,8 @@ public class PlayerController : MonoBehaviour
         rb.velocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Static;
 
+        rb.excludeLayers |= (1 << enemyLayer);
+
         GameManager.Instance.PlayerDied();
 
         cameraController?.Shake(0.25f, 0.25f);
@@ -447,8 +485,35 @@ public class PlayerController : MonoBehaviour
         Destroy(this);
     }
 
+    IEnumerator StickTimeout()
+    {
+        float t = 0f;
+        float maxTime = 2f;
+
+        while (t < maxTime)
+        {
+            if (stuckToPlatform)
+                yield break;
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        // If it reaches here -> failed stick
+        if (isSticking)
+        {
+            GameManager.Instance.PlayerDied();
+
+            cameraController?.Shake(0.35f, 0.35f);
+
+            Destroy(gameObject);
+        }
+    }
+
     void Explode()
     {
+        if (isStone) return;
+
         Instantiate(explosionParticle, transform.position, Quaternion.identity);
         Instantiate(deadParticle, transform.position, Quaternion.identity);
 
@@ -465,10 +530,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        int killZoneLayer = LayerMask.NameToLayer("KillZone");
+
+        if (collision.collider.gameObject.layer == killZoneLayer)
+        {
+            Die();
+            return;
+        }
+
         if (!isSticking) return;
 
         if (collision.gameObject.layer == platformLayer)
+        {
+            stuckToPlatform = true;
             Stick();
+        }
     }
 
     #endregion
