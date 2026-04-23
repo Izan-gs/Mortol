@@ -240,7 +240,7 @@ MonoBehaviour:
   chaseAnimSpeed: 1.8
   wallCheck: {fileID: 8757822621516909446}
   edgeCheck: {fileID: 9199433455404891892}
-  checkDistance: 0.2
+  checkDistance: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 8

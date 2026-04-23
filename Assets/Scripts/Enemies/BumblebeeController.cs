@@ -53,34 +53,33 @@ public class BumblebeeController : Enemy
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+        PlayerController player = collision.gameObject.GetComponentInParent<PlayerController>();
 
-            if (player != null && (player.IsStoneFalling() || player.IsSticking()))
+        if (player != null)
+        {
+            // If player is in a "killable state"
+            if (player.IsStoneFalling() || player.IsSticking())
             {
                 killedByPlayerSource = true;
 
-                // Randomize life bonus between 1 and 2
                 playerLifeBonus = Random.Range(1, 3);
 
-                // Spawn life effect
                 if (lifesAddEffect != null)
                 {
                     GameObject effectInstance = Instantiate(lifesAddEffect, transform.position, Quaternion.identity);
 
-                    // Get TMP_Text from children and set value
                     TMPro.TMP_Text text = effectInstance.GetComponentInChildren<TMPro.TMP_Text>();
                     if (text != null)
-                    {
                         text.text = playerLifeBonus.ToString();
-                    }
                 }
 
-                // Add life to player
                 GameManager.Instance.playerLives += playerLifeBonus;
 
                 Die();
+            }
+            else
+            {
+                player.Die();
             }
 
             return;
