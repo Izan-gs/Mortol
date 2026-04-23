@@ -237,6 +237,38 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
+    #region Blink Event
+
+    [Header("Blink Event")]
+    [SerializeField] private float blinkDuration = 1f;
+    [SerializeField] private float blinkIntervalEvent = 0.1f;
+
+    private Coroutine blinkEventCoroutine;
+
+    public void Blinking()
+    {
+        if (blinkEventCoroutine != null)
+            StopCoroutine(blinkEventCoroutine);
+
+        blinkEventCoroutine = StartCoroutine(BlinkEventRoutine());
+    }
+
+    private IEnumerator BlinkEventRoutine()
+    {
+        float t = 0f;
+
+        while (t < blinkDuration)
+        {
+            spriteRenderer.enabled = !spriteRenderer.enabled;
+            yield return new WaitForSeconds(blinkIntervalEvent);
+            t += blinkIntervalEvent;
+        }
+
+        spriteRenderer.enabled = false;
+    }
+
+    #endregion
+
     #region Movement
 
     void Move()

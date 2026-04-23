@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 7373219298438775350}
   - component: {fileID: 452398391379449726}
   - component: {fileID: 6232306295133822789}
-  m_Layer: 0
+  - component: {fileID: 1530002488729859339}
+  m_Layer: 3
   m_Name: Exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,9 +73,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -486339945
+  m_SortingLayer: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 620811824, guid: 01dd0a2769e8e784cba275b39804dbb3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -139,9 +140,9 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8042853863857908907}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f7793789112630c48a4f279984595b72, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -152,3 +153,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1530002488729859339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8042853863857908907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3436d2c23c3a6104cabe3360886c0bfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  animator: {fileID: 6232306295133822789}
+  exitTriggerName: Exit
+  objectToActivate: {fileID: 0}
+  prefabToSpawn: {fileID: 0}
+  spawnPoint: {fileID: 0}
+  sceneToLoad: 
+  componentToEnable: {fileID: 0}

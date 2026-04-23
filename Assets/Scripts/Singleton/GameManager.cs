@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,8 +17,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text livesText;
 
     private Transform shipTransform;
-    private GameObject currentPlayer;
+    public GameObject currentPlayer;
     private bool firstSpawnDone;
+    private bool isFirstSpawnOfLevel = true;
     private bool respawnQueued;
 
     void Awake()
@@ -36,10 +38,48 @@ public class GameManager : MonoBehaviour
         CacheShipTransform();
     }
 
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     void Start()
     {
+        FindLivesText();
+        UpdateLivesUI();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ResetForNewLevel();
+    }
+
+    private void ResetForNewLevel()
+    {
+        isFirstSpawnOfLevel = true;
+        respawnQueued = false;
+
+        currentPlayer = null;
+        shipTransform = null;
+
+        CacheShipTransform();
+        FindLivesText();
+
         UpdateLivesUI();
         SpawnPlayer();
+    }
+
+    private void FindLivesText()
+    {
+        GameObject obj = GameObject.Find("Lifes Text");
+
+        if (obj != null)
+            livesText = obj.GetComponent<TMP_Text>();
     }
 
     private void UpdateLivesUI()
@@ -91,7 +131,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        playerLives--;
+        // ONLY lose life on respawns, never on first spawn of level
+        if (!isFirstSpawnOfLevel)
+            playerLives--;
+
+        isFirstSpawnOfLevel = false;
 
         currentPlayer = Instantiate(playerPrefab, shipTransform.position, Quaternion.identity);
 
@@ -99,12 +143,17 @@ public class GameManager : MonoBehaviour
         if (player != null)
         {
             player.StartParachute();
+
+            Exit exit = FindAnyObjectByType<Exit>();
+            if (exit != null) exit.player = player;
         }
 
         if (cam != null)
         {
             cam.SetTarget(currentPlayer.transform);
         }
+
+        UpdateLivesUI();
     }
 
     public void PlayerDied()
