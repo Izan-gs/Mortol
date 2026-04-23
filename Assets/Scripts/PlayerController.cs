@@ -407,8 +407,9 @@ public class PlayerController : MonoBehaviour
 
         canDamageEnemies = false;
 
+        rb.bodyType = RigidbodyType2D.Kinematic;
         rb.velocity = Vector2.zero;
-        rb.bodyType = RigidbodyType2D.Static;
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
 
         gameObject.layer = platformLayer;
         gameObject.tag = "Platform";

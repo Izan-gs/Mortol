@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class GameManager : MonoBehaviour
 
     [Header("Spawn")]
     [SerializeField] private GameObject playerPrefab;
+
+    [Header("UI")]
+    [SerializeField] private TMP_Text livesText;
 
     private Transform shipTransform;
     private GameObject currentPlayer;
@@ -34,11 +38,20 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        UpdateLivesUI();
         SpawnPlayer();
+    }
+
+    private void UpdateLivesUI()
+    {
+        if (livesText != null)
+            livesText.text = playerLives.ToString();
     }
 
     public void SpawnPlayer()
     {
+        UpdateLivesUI();
+
         if (playerLives <= 0)
         {
             Debug.Log("No lives left");

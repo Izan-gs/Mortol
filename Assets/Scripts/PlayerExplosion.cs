@@ -9,6 +9,10 @@ public class PlayerExplosion : MonoBehaviour
 
     [Header("Stone Effect")]
     [SerializeField] private GameObject stoneExplosionParticle;
+
+    [Header("Brick Effect")]
+    [SerializeField] private GameObject brickExplosionParticle;
+
     [SerializeField] private LayerMask targetLayer;
 
     private bool hasExploded;
@@ -28,6 +32,8 @@ public class PlayerExplosion : MonoBehaviour
 
         foreach (var hit in hits)
         {
+            if (hit == null) continue;
+
             Enemy enemy = hit.GetComponent<Enemy>();
             if (enemy != null)
             {
@@ -40,6 +46,17 @@ public class PlayerExplosion : MonoBehaviour
             if (isPlayer && isPlatform)
             {
                 Instantiate(stoneExplosionParticle, hit.transform.position, Quaternion.identity);
+                Destroy(hit.gameObject);
+            }
+
+            // Brick detection
+            if (hit.gameObject.name.Contains("Brick"))
+            {
+                if (brickExplosionParticle != null)
+                {
+                    Instantiate(brickExplosionParticle, hit.transform.position, Quaternion.identity);
+                }
+
                 Destroy(hit.gameObject);
             }
         }

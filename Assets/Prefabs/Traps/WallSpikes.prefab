@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7352703182427435167}
   - component: {fileID: 8545929344598728446}
   - component: {fileID: 6502091034095959752}
-  - component: {fileID: 4314013430541234143}
+  - component: {fileID: -6565970903225934455}
   m_Layer: 0
-  m_Name: FloorSpikes
+  m_Name: WallSpikes
   m_TagString: Spikes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: -486339945
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 165ff974b61dd9d4783e36be8d421329, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 18580a0ee354c5c4f9e1810b8796fab1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -118,7 +118,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.3}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -129,9 +129,9 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.1}
+  m_Size: {x: 0.75, y: 0.625}
   m_EdgeRadius: 0
---- !u!114 &4314013430541234143
+--- !u!114 &-6565970903225934455
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,8 +140,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 2124727610204297938}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f391d783fa4a6e947816b16f05bc54fa, type: 3}
+  m_Script: {fileID: 11500000, guid: b9a523828056b3b4cad63b2f2cc5f2f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minFallSpeedToDie: 0.1
-  destroyParticle: {fileID: 6493863498170319993, guid: 9e776821be1ace94d9feb020c846d340, type: 3}
+  minFallSpeedToDie: 0
+  destroyParticle: {fileID: 0}

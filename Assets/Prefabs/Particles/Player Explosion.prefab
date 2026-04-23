@@ -1739,8 +1739,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   lifeTime: 0.2
-  radius: 1
+  radius: 2.5
   stoneExplosionParticle: {fileID: 6493863498170319993, guid: 9e776821be1ace94d9feb020c846d340, type: 3}
+  brickExplosionParticle: {fileID: 6493863498170319993, guid: cc094f88d2bfdbe4daba1414f4268e9e, type: 3}
   targetLayer:
     serializedVersion: 2
     m_Bits: 8

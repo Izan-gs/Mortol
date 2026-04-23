@@ -1,64 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Parallax : MonoBehaviour
 {
-    Transform cam; // Main Camera
-    Vector3 camStartPos;
-    float distance; // distance between the camera start position and its current position
-    GameObject[] backgrounds;
-    Material[] mat;
-    float[] backSpeed;
-    float farthestBack;
+    Transform cam;
+    Vector3 previousCamPos;
+    Vector3 initialCamOffset;
+    Vector3 startPosition;
 
-    [Range(0.01f, 0.05f)]
-    public float parallaxSpeed;
+    public float distanceX = 0f;
+    public float distanceY = 0f;
 
-    // Start is called before the first frame update
-    void Start()
+    public float smoothingX = 1f;
+    public float smoothingY = 1f;
+
+    void Awake()
     {
         cam = Camera.main.transform;
-        camStartPos = cam.position;
-
-        int backCount = transform.childCount;
-        mat = new Material[backCount];
-        backSpeed = new float[backCount];
-        backgrounds = new GameObject[backCount];
-        
-        for(int i = 0; i < backCount; i++)
-        {
-            backgrounds[i] = transform.GetChild(i).gameObject;
-            mat[i] = backgrounds[i].GetComponent<Renderer>().material;
-        }
-        BackSpeedCalculate(backCount);
+        startPosition = transform.position;
+        initialCamOffset = startPosition - cam.position;
+        previousCamPos = cam.position;
     }
 
-
-    void BackSpeedCalculate(int backCount)
+    void Update()
     {
-        for (int i = 0; i < backCount; i++) // Find the farthest background
+        Vector3 newPosition = transform.position;
+
+        if (distanceX != 0f)
         {
-            if ((backgrounds[i].transform.position.z - cam.position.z) > farthestBack)
-            {
-                farthestBack = backgrounds[i].transform.position.z - cam.position.z;
-            }
+            float parallaxX = (cam.position.x - previousCamPos.x) * distanceX;
+            newPosition.x = Mathf.Lerp(transform.position.x, transform.position.x + parallaxX, smoothingX * Time.deltaTime);
         }
-        for (int i = 0;i < backCount; i++) // Set the speed of backgrounds
+
+        if (distanceY != 0f)
         {
-            backSpeed[i] = 1 - (backgrounds[i].transform.position.z - cam.position.z) / farthestBack;
+            float parallaxY = (cam.position.y - previousCamPos.y) * distanceY;
+            newPosition.y = Mathf.Lerp(transform.position.y, transform.position.y + parallaxY, smoothingY * Time.deltaTime);
         }
+
+        transform.position = newPosition;
+        previousCamPos = cam.position;
     }
 
-    private void LateUpdate()
+    public void ResetParallax()
     {
-        distance = cam.position.x - camStartPos.x;
-        transform.position = new Vector3(cam.position.x, transform.position.y,0);
-
-        for (int i = 0; i < backgrounds.Length; i++)
-        {
-            float speed = backSpeed[i] * parallaxSpeed;
-            mat[i].SetTextureOffset("_MainTex", new Vector2(distance,0) * speed);
-        }
+        transform.position = cam.position + initialCamOffset;
+        previousCamPos = cam.position;
     }
 }
