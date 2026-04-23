@@ -175,10 +175,9 @@ public class CrocodileController : Enemy
     #region Combat
 
     // Aplica el cambio de color al sprite si recibe daño
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, bool fromPlayer = false)
     {
-        // 
-        base.TakeDamage(damage);
+        base.TakeDamage(damage, fromPlayer);
 
         if (spriteRenderer != null && life == 1)
         {

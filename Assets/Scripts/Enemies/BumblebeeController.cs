@@ -53,19 +53,40 @@ public class BumblebeeController : Enemy
 
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
-        base.OnCollisionEnter2D(collision);
-
         if (collision.gameObject.CompareTag("Player"))
         {
             PlayerController player = collision.gameObject.GetComponent<PlayerController>();
 
-            if (player != null && player.IsStoneFalling())
+            if (player != null && (player.IsStoneFalling() || player.IsSticking()))
             {
-                killedByPlayer = true;
+                killedByPlayerSource = true;
+
+                // Randomize life bonus between 1 and 2
+                playerLifeBonus = Random.Range(1, 3);
+
+                // Spawn life effect
+                if (lifesAddEffect != null)
+                {
+                    GameObject effectInstance = Instantiate(lifesAddEffect, transform.position, Quaternion.identity);
+
+                    // Get TMP_Text from children and set value
+                    TMPro.TMP_Text text = effectInstance.GetComponentInChildren<TMPro.TMP_Text>();
+                    if (text != null)
+                    {
+                        text.text = playerLifeBonus.ToString();
+                    }
+                }
+
+                // Add life to player
+                GameManager.Instance.playerLives += playerLifeBonus;
+
                 Die();
             }
+
+            return;
         }
-        else if (collision.gameObject.CompareTag("Platform"))
+
+        if (collision.gameObject.CompareTag("Platform"))
         {
             Die();
         }
@@ -73,9 +94,13 @@ public class BumblebeeController : Enemy
 
     protected override void Die()
     {
-        if (killedByPlayer && nestObjRef != null)
+        if (nestObjRef != null)
         {
-            nestObjRef.GetComponent<NestController>().IncrementDeadUnits();
+            NestController nest = nestObjRef.GetComponent<NestController>();
+            if (nest != null)
+            {
+                nest.IncrementDeadUnits(killedByPlayerSource);
+            }
         }
 
         base.Die();

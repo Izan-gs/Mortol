@@ -156,9 +156,19 @@ public class PlayerController : MonoBehaviour
         UpdateAnimator();
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (isStuck) return;
+
+        if (isSticking)
+        {
+            float dir = Mathf.Sign(transform.localScale.x);
+
+            Vector2 nextPos = rb.position + new Vector2(dir * 20f * Time.fixedDeltaTime, 0f);
+
+            rb.MovePosition(new Vector2(nextPos.x, lockedY));
+            return;
+        }
 
         if (!isSticking && !isStone)
             Move();
@@ -441,9 +451,6 @@ public class PlayerController : MonoBehaviour
         boxCollider.enabled = true;
 
         rb.gravityScale = 0f;
-
-        float dir = Mathf.Sign(transform.localScale.x);
-        rb.velocity = new Vector2(dir * 20f, 0f);
 
         lockedY = transform.position.y;
         lockYPosition = true;

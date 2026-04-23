@@ -108,7 +108,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -812572405
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 2115165745, guid: 0b302d328b7fc204ca85d7a60ed45622, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -227,6 +227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deadParticle: {fileID: 6493863498170319993, guid: 9ea0dd0ecded67544967793579445ef5, type: 3}
+  lifesAddEffect: {fileID: 6920837434440078379, guid: f854b8a2e2340fc40b36eb6ca0acfd46, type: 3}
   onDie:
     m_PersistentCalls:
       m_Calls: []

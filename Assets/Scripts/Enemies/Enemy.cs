@@ -9,16 +9,18 @@ public abstract class Enemy : MonoBehaviour
     protected float velocity;
     protected Vector2 direction;
     protected int life;
-    protected int playerLifeBonus;
+    protected int playerLifeBonus = 1;
 
     protected SpriteRenderer spriteRenderer;
 
     [Header("FX")]
     [SerializeField] private GameObject deadParticle;
+    public GameObject lifesAddEffect;
 
-    [HideInInspector] public UnityEvent onDie; // Event suscription
+    [HideInInspector] public UnityEvent onDie;
 
     private bool isInvulnerable = false;
+    protected bool killedByPlayerSource = false;
     [SerializeField] private float invulnerableTime = 0.1f;
 
     protected virtual void Awake()
@@ -51,14 +53,36 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public virtual void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage, bool fromPlayer = false)
     {
         if (isInvulnerable) return;
+
+        if (fromPlayer)
+            killedByPlayerSource = true;
 
         life -= damage;
 
         if (life <= 0)
         {
+            // Randomize life bonus between 1 and 2
+            playerLifeBonus = Random.Range(1, 3);
+
+            // Spawn life effect
+            if (lifesAddEffect != null)
+            {
+                GameObject effectInstance = Instantiate(lifesAddEffect, transform.position, Quaternion.identity);
+
+                // Get TMP_Text from children and set value
+                TMPro.TMP_Text text = effectInstance.GetComponentInChildren<TMPro.TMP_Text>();
+                if (text != null)
+                {
+                    text.text = playerLifeBonus.ToString();
+                }
+            }
+
+            // Add life to player
+            GameManager.Instance.playerLives += playerLifeBonus;
+
             Die();
             return;
         }
@@ -73,11 +97,11 @@ public abstract class Enemy : MonoBehaviour
         isInvulnerable = false;
     }
 
-
     protected virtual void Die()
     {
         onDie?.Invoke();
 
+        // Spawn death particles
         if (deadParticle != null)
         {
             Instantiate(deadParticle, transform.position, Quaternion.identity);

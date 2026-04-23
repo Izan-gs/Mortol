@@ -116,13 +116,26 @@ public class NestController : MonoBehaviour
         return false;
     }
 
-    public void IncrementDeadUnits()
+    public void IncrementDeadUnits(bool killedByPlayer)
     {
+        if (!killedByPlayer)
+            return;
+
         deadUnitsCount++;
 
         if (deadUnitsCount >= MAX_KILLED_COUNT)
         {
             isAlive = false;
+            isActive = false;
+
+            StopAllCoroutines();
+
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null)
+                col.enabled = false;
+
+            if (animator != null)
+                animator.enabled = false;
         }
     }
 }

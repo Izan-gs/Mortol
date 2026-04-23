@@ -28,7 +28,11 @@ public class PlayerExplosion : MonoBehaviour
         if (hasExploded) return;
         hasExploded = true;
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radius, targetLayer);
+        // Ensure Enemy layer is included
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        int combinedLayer = targetLayer | (1 << enemyLayer);
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radius, combinedLayer);
 
         foreach (var hit in hits)
         {
@@ -37,7 +41,7 @@ public class PlayerExplosion : MonoBehaviour
             Enemy enemy = hit.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage, true);
             }
 
             bool isPlayer = hit.gameObject.name.Contains("Player");
