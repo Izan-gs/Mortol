@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+// PUBLIC API
+public static class EventBus
+{
+    // Enemy
+    public static void EnemyKilled(EnemyKilledEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+
+    // Ability
+    public static void AbilityUsed(AbilityUsedEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+
+    // Life
+    public static void LifeLost(LifeLostEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+
+    // Jump
+    public static void Jump(JumpEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+
+    // Player State
+    public static void PlayerStateChanged(PlayerStateChangedEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+}
