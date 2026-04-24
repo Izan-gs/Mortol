@@ -490,6 +490,7 @@ MonoBehaviour:
   boxColliderDeadSpikes: {fileID: 7809916302040385230}
   explosionParticle: {fileID: 6104280663052025139, guid: cf1e9853146581042be2b9f61ea10d76, type: 3}
   deadParticle: {fileID: 6493863498170319993, guid: d2ed4a019d849504b8346cbd747363ae, type: 3}
+  brickExplosionParticle: {fileID: 6493863498170319993, guid: cc094f88d2bfdbe4daba1414f4268e9e, type: 3}
   moveSpeed: 5
   jumpForce: 14
   jumpCutMultiplier: 0.5

@@ -45,3 +45,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mixer: {fileID: 24100000, guid: 22dade31baf644f42ad5b8f437b2cc39, type: 2}
+  sfxGroup: {fileID: -482711366576722882, guid: 22dade31baf644f42ad5b8f437b2cc39, type: 2}
+  jumpSound: {fileID: 8300000, guid: 693c5cf9d7f63e048b99e98d467f4450, type: 3}
+  turnToStoneSound: {fileID: 8300000, guid: de9e55276d099ec4280f8d714ec775ff, type: 3}
+  stickSound: {fileID: 8300000, guid: 4b50bbd7fa370ee4ca0c6e50ea776940, type: 3}
+  explosionSound: {fileID: 8300000, guid: 626f32e4edf3b9648831e1c561137f01, type: 3}
+  dieSound: {fileID: 8300000, guid: abc57dfda1c666649a346e493ce1c4fc, type: 3}
+  nestSpawnSound: {fileID: 8300000, guid: 640369e16c564234cb382377ffa35255, type: 3}
+  destroyBrickSound: {fileID: 8300000, guid: 8666974cd2c340849bdf39b98567881e, type: 3}
+  activatorPlatformSound: {fileID: 8300000, guid: b08de799800ea504d90077f2687814fb, type: 3}
+  lifeBlockSound: {fileID: 8300000, guid: f92b90c70b2725c46b76d383c3d06114, type: 3}

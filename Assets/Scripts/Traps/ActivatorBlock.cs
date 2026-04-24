@@ -60,6 +60,8 @@ public class ActivatorBlock : MonoBehaviour
 
         SetVisual(pressed);
         OnActivatorChanged?.Invoke(type, pressed);
+
+        AudioManager.instance.PlaySound(AudioManager.instance.activatorPlatformSound);
     }
 
     private void SetVisual(bool pressed)

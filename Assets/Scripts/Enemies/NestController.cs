@@ -71,6 +71,8 @@ public class NestController : MonoBehaviour
 
         GameObject obj = Instantiate(spawnUnitType, transform.position, Quaternion.identity);
 
+        AudioManager.instance.PlaySound(AudioManager.instance.nestSpawnSound);
+
         // Apply facing scale to spawned unit
         Vector3 baseScale = obj.transform.localScale;
 

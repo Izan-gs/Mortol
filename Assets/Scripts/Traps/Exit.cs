@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Exit : MonoBehaviour
 {
@@ -20,16 +21,74 @@ public class Exit : MonoBehaviour
 
     private bool activated;
 
+    private void Start()
+    {
+        StartCoroutine(FadeOut(objectToActivate2, 1f));
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (activated) return;
 
         if (collision.GetComponent<PlayerController>() != null)
         {
+            collision.GetComponent<PlayerController>().controlsLocked = true;
             activated = true;
             StartCoroutine(ExitSequence());
         }
     }
+
+    private IEnumerator FadeIn(GameObject obj, float duration)
+    {
+        Image img = obj.GetComponent<Image>();
+        if (img == null) yield break;
+
+        Color c = img.color;
+        c.a = 0f;
+        img.color = c;
+
+        float t = 0f;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / duration;
+
+            c.a = Mathf.Lerp(0f, 1f, normalized);
+            img.color = c;
+
+            yield return null;
+        }
+
+        c.a = 1f;
+        img.color = c;
+    }
+
+    private IEnumerator FadeOut(GameObject obj, float duration)
+    {
+        Image img = obj.GetComponent<Image>();
+        if (img == null) yield break;
+
+        Color c = img.color;
+        float startAlpha = c.a;
+
+        float t = 0f;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float normalized = t / duration;
+
+            c.a = Mathf.Lerp(startAlpha, 0f, normalized);
+            img.color = c;
+
+            yield return null;
+        }
+
+        c.a = 0f;
+        img.color = c;
+    }
+
 
     private IEnumerator ExitSequence()
     {
@@ -61,10 +120,13 @@ public class Exit : MonoBehaviour
         yield return new WaitForSeconds(5f);
 
         if (objectToActivate2 != null)
+        {
             objectToActivate2.SetActive(true);
+            StartCoroutine(FadeIn(objectToActivate2, 1f));
+        }
 
         // Wait 1 more second and change scene
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         if (objectToActivate != null)
             objectToActivate.SetActive(true);

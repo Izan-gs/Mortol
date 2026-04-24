@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     [Header("FX")]
     public GameObject explosionParticle;
     [SerializeField] private GameObject deadParticle;
+    [SerializeField] private GameObject brickExplosionParticle;
 
     #endregion
 
@@ -82,7 +83,7 @@ public class PlayerController : MonoBehaviour
     private bool wasFallingStone;
     private bool isStuck;
     private bool isSticking;
-    private bool controlsLocked;
+    public bool controlsLocked;
 
     public bool canDamageEnemies;
     public bool isInvulnerable;
@@ -316,6 +317,8 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
+        AudioManager.instance.PlaySound(AudioManager.instance.jumpSound);
+
         float gravity = Mathf.Abs(Physics2D.gravity.y * rb.gravityScale);
 
         // Vertical calculations
@@ -445,6 +448,8 @@ public class PlayerController : MonoBehaviour
 
         anim?.SetTrigger(StoneHash);
 
+        AudioManager.instance.PlaySound(AudioManager.instance.turnToStoneSound);
+
         capsuleCollider.enabled = false;
         boxCollider.enabled = false;
         boxCollider2.enabled = true;
@@ -499,6 +504,8 @@ public class PlayerController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(stickingLayer, cameraWallLayer, true);
 
         anim?.SetTrigger(TorpedoHash);
+
+        AudioManager.instance.PlaySound(AudioManager.instance.stickSound);
 
         capsuleCollider.enabled = false;
         boxCollider.enabled = true;
@@ -578,6 +585,8 @@ public class PlayerController : MonoBehaviour
         Instantiate(explosionParticle, transform.position, Quaternion.identity);
         Instantiate(deadParticle, transform.position, Quaternion.identity);
 
+        AudioManager.instance.PlaySound(AudioManager.instance.explosionSound);
+
         GameManager.Instance.PlayerDied();
 
         cameraController?.Shake(0.35f, 0.35f);
@@ -597,6 +606,29 @@ public class PlayerController : MonoBehaviour
         {
             Die();
             return;
+        }
+
+        if (wasFallingStone)
+        {
+            GameObject brick = collision.collider.gameObject;
+
+            if (!brick.name.Contains("Brick"))
+                return;
+
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                if (contact.normal.y > 0.5f)
+                {
+                    if (brickExplosionParticle != null)
+                    {
+                        Instantiate(brickExplosionParticle, brick.transform.position, Quaternion.identity);
+                        AudioManager.instance.PlaySound(AudioManager.instance.destroyBrickSound);
+                    }
+
+                    Destroy(brick);
+                    break;
+                }
+            }
         }
 
         if (!isSticking) return;
@@ -625,6 +657,8 @@ public class PlayerController : MonoBehaviour
         gameObject.tag = "Untagged";
 
         anim?.SetTrigger(DieHash);
+
+        AudioManager.instance.PlaySound(AudioManager.instance.dieSound);
 
         spriteRenderer.sortingOrder = -1;
 

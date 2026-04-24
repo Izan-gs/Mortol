@@ -1425,6 +1425,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1530002488729859339, guid: 6a468db275a5f7e4c814fc12371523e7, type: 3}
+      propertyPath: sceneToLoad
+      value: Main Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 1530002488729859339, guid: 6a468db275a5f7e4c814fc12371523e7, type: 3}
+      propertyPath: objectToActivate
+      value: 
+      objectReference: {fileID: 378651289}
+    - target: {fileID: 1530002488729859339, guid: 6a468db275a5f7e4c814fc12371523e7, type: 3}
+      propertyPath: objectToActivate2
+      value: 
+      objectReference: {fileID: 378651288}
     - target: {fileID: 3279947123435042283, guid: 6a468db275a5f7e4c814fc12371523e7, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -1772,6 +1784,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f42540e522d588341a960fc8dfc7c98c, type: 3}
+--- !u!1 &378651288 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 157671829214343034, guid: f42540e522d588341a960fc8dfc7c98c, type: 3}
+  m_PrefabInstance: {fileID: 378651287}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &378651289 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6069018405243379901, guid: f42540e522d588341a960fc8dfc7c98c, type: 3}
+  m_PrefabInstance: {fileID: 378651287}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &384805247
 GameObject:
   m_ObjectHideFlags: 0

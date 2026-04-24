@@ -59,6 +59,8 @@ public class PlayerExplosion : MonoBehaviour
                 if (brickExplosionParticle != null)
                 {
                     Instantiate(brickExplosionParticle, hit.transform.position, Quaternion.identity);
+
+                    AudioManager.instance.PlaySound(AudioManager.instance.destroyBrickSound);
                 }
 
                 Destroy(hit.gameObject);
