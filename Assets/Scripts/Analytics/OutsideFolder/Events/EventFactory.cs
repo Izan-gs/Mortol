@@ -20,11 +20,19 @@ public static class EventFactory
         };
     }
 
-    public static LifeLostEvent LifeLost(LifeSourceType source)
+    public static LifeLostEvent LifeLost(LifeLossSource source)
     {
         return new LifeLostEvent
         {
-            source = source
+            loss = source
+        };
+    }
+
+    public static LifeGainEvent LifeGain(LifeGainSource source)
+    {
+        return new LifeGainEvent
+        {
+            gain = source
         };
     }
 

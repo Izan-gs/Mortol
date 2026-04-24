@@ -12,11 +12,11 @@ public class LevelAnalytics
     public float sessionEndTime;
 
     // 
-    public TimeAnalytics time;
-    public JumpAnalytics jumps;
-    public CombatAnalytics combat;
-    public LifeAnalytics lives;
-    public BlockAnalytics blocks;
     public AbilityAnalytics abilities;
+    public BlockAnalytics blocks;
+    public CombatAnalytics combat;
+    public JumpAnalytics jumps;
+    public LifeAnalytics lives;
     public MovementAnalytics movement;
+    public TimeAnalytics time;
 }

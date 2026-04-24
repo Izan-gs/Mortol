@@ -4,5 +4,5 @@ using UnityEngine;
 
 public struct LifeLostEvent
 {
-    public LifeSourceType source;
+    public LifeLossSource loss;
 }

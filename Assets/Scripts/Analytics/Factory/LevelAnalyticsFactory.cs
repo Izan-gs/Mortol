@@ -11,13 +11,13 @@ public class LevelAnalyticsFactory
             levelId = levelId,
             sessionStartTime = Time.time,
 
-            time = new TimeAnalytics(),
-            jumps = new JumpAnalytics { height = new Range(), distance = new Range() },
-            combat = new CombatAnalytics { enemiesKilled = new EnemyCounter() },
-            lives = new LifeAnalytics { gained = new LifeSourceCounter(), lost = new LifeSourceCounter() },
-            blocks = new BlockAnalytics(),
             abilities = new AbilityAnalytics(),
-            movement = new MovementAnalytics()
+            blocks = new BlockAnalytics(),
+            combat = new CombatAnalytics(),
+            jumps = new JumpAnalytics { height = new Range(), distance = new Range() },
+            lives = new LifeAnalytics(),
+            movement = new MovementAnalytics(),
+            time = new TimeAnalytics()
         };
     }
 }

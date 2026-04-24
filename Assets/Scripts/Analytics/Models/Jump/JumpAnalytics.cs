@@ -8,9 +8,10 @@ public class JumpAnalytics
 {
     public int count;
 
-    public Range height;
-    public Range distance;
+    public Range height = new Range();
+    public Range distance = new Range();
 
+    // Registers height and distance
     public void RegisterJump(float h, float d)
     {
         count++;

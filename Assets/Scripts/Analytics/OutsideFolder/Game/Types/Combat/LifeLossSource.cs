@@ -2,10 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum LifeSourceType
+public enum LifeLossSource
 {
+    Stone,
+    Explosion,
+    Arrow,
     Spikes,
-    Pig,
+    SpikedBalls,
     Bumblebee,
+    Pig,
     Crocodile
 }

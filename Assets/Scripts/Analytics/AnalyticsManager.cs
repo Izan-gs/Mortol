@@ -31,6 +31,7 @@ public class AnalyticsManager : MonoBehaviour
         GameEvents.OnEnemyKilled += HandleEnemyKilled;
         GameEvents.OnAbilityUsed += HandleAbilityUsed;
         GameEvents.OnLifeLost += HandleLifeLost;
+        GameEvents.OnLifeGain += HandleLifeGain;
         GameEvents.OnJump += HandleJump;
     }
 
@@ -41,6 +42,7 @@ public class AnalyticsManager : MonoBehaviour
         GameEvents.OnEnemyKilled -= HandleEnemyKilled;
         GameEvents.OnAbilityUsed -= HandleAbilityUsed;
         GameEvents.OnLifeLost -= HandleLifeLost;
+        GameEvents.OnLifeGain -= HandleLifeGain;
         GameEvents.OnJump -= HandleJump;
     }
 
@@ -76,11 +78,6 @@ public class AnalyticsManager : MonoBehaviour
     }
     #endregion
 
-    // ?¿?¿
-    public void RegisterDirectionChange()
-    {
-        current.movement.directionChanges++;
-    }
 
     // |==========================================================================================================|
     // |===============================================================================|
@@ -105,7 +102,7 @@ public class AnalyticsManager : MonoBehaviour
     {
         if (!IsReady()) return;
 
-        current.combat.enemiesKilled.RegisterKill(e.enemy);
+        current.combat.RegisterKill(e.enemy);
     }
     private void HandleAbilityUsed(AbilityUsedEvent e)
     {
@@ -117,7 +114,13 @@ public class AnalyticsManager : MonoBehaviour
     {
         if (!IsReady()) return;
 
-        current.lives.lost.AddLoss(e.source);
+        current.lives.AddLoss(e.loss);
+    }
+    private void HandleLifeGain(LifeGainEvent e)
+    {
+        if (!IsReady()) return;
+
+        current.lives.AddGain(e.gain);
     }
     private void HandleJump(JumpEvent e)
     {
@@ -125,12 +128,20 @@ public class AnalyticsManager : MonoBehaviour
 
         current.jumps.RegisterJump(e.height, e.distance);
     }
+    // ?¿?¿ Arreglar con la creación de eventos
+    public void HandleMovement()
+    {
+        current.movement.directionChanged();
+        current.movement.shipMoved();
+    }
 }
 
 // |======|
 // TO-DO
 // |======|
 // COMMENT EVERYTHING AND SAVE IT
-// CHECK THAT ALL IN THE DOCS IS IMPLEMENTED
-// CHECK THAT ALL THE SYSTEM LOGIC IS IMPLEMENTED WELL
-// ABILITY "SPECIFIED IN DOCS"
+// --QUEDA POR HACER
+// TIEMPO
+// MOVIMIENTO
+// BLOQUES
+// ABILITY "COMBO_SAVER"

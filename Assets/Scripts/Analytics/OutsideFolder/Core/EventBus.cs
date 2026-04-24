@@ -17,8 +17,14 @@ public static class EventBus
         GameEvents.Emit(e);
     }
 
-    // Life
+    // Life Lost
     public static void LifeLost(LifeLostEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+
+    // Life Gained
+    public static void LifeGained(LifeGainEvent e)
     {
         GameEvents.Emit(e);
     }

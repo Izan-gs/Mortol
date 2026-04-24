@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyKilledEvent
+public struct EnemyKilledEvent
 {
     public EnemyType enemy;
 }

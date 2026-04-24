@@ -27,6 +27,14 @@ public static class GameEvents
     {
         OnLifeLost?.Invoke(e);
     }
+
+    public static event Action<LifeGainEvent> OnLifeGain;
+
+    public static void Emit(LifeGainEvent e)
+    {
+        OnLifeGain?.Invoke(e);
+    }
+
     public static event Action<JumpEvent> OnJump;
 
     public static void Emit(JumpEvent e)

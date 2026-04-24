@@ -6,14 +6,15 @@ using UnityEngine;
 [Serializable]
 public class AbilityAnalytics
 {
-    public int stone;
-    public int explosion;
-    public int arrow;
+    private Dictionary<String, int> usage = new();
 
     public void RegisterUse(AbilityType ability)
     {
-        if (ability == AbilityType.Stone) stone++;
-        else if (ability == AbilityType.Explosion) explosion++;
-        else if (ability == AbilityType.Arrow) arrow++;
+        string key = ability.ToString(); // We need the string because JSON needs a string not an enum
+
+        if (!usage.ContainsKey(key))
+            usage[key] = 0;
+
+        usage[key]++;
     }
 }
