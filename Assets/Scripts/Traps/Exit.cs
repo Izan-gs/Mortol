@@ -66,6 +66,11 @@ public class Exit : MonoBehaviour
         // Wait 1 more second and change scene
         yield return new WaitForSeconds(1f);
 
+        if (objectToActivate != null)
+            objectToActivate.SetActive(true);
+
+        AnalyticsManager.Instance.EndLevel();
+
         if (!string.IsNullOrEmpty(sceneToLoad))
             SceneManager.LoadScene(sceneToLoad);
     }

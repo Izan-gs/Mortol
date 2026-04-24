@@ -22,6 +22,10 @@ public class GameManager : MonoBehaviour
     private bool isFirstSpawnOfLevel = true;
     private bool respawnQueued;
 
+    // Pause
+    private GameObject pauseText;
+    private bool isPaused;
+
     void Awake()
     {
         if (Instance == null)
@@ -36,6 +40,42 @@ public class GameManager : MonoBehaviour
         }
 
         CacheShipTransform();
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePause();
+        }
+    }
+
+    private void TogglePause()
+    {
+        isPaused = !isPaused;
+
+        Time.timeScale = isPaused ? 0f : 1f;
+
+        FindPauseText();
+
+        if (pauseText != null)
+        {
+            TMP_Text text = pauseText.GetComponent<TMP_Text>();
+
+            if (text != null)
+                text.alpha = isPaused ? 1f : 0f;
+        }
+    }
+
+    private void FindPauseText()
+    {
+        if (pauseText == null)
+        {
+            pauseText = GameObject.Find("Pause Text");
+        }
     }
 
     private void OnEnable()
@@ -70,6 +110,10 @@ public class GameManager : MonoBehaviour
         CacheShipTransform();
         FindLivesText();
 
+        pauseText = null;
+        isPaused = false;
+        Time.timeScale = 1f;
+
         UpdateLivesUI();
         SpawnPlayer();
     }
@@ -93,17 +137,11 @@ public class GameManager : MonoBehaviour
         UpdateLivesUI();
 
         if (playerLives <= 0)
-        {
-            Debug.Log("No lives left");
             return;
-        }
 
         CameraController cam = GetCameraController();
         if (cam == null)
-        {
-            Debug.LogError("CameraController missing!");
             return;
-        }
 
         if (!firstSpawnDone)
         {
@@ -118,20 +156,13 @@ public class GameManager : MonoBehaviour
     private void SpawnPlayerNow(CameraController cam)
     {
         if (playerLives <= 0)
-        {
-            Debug.Log("No lives left");
             return;
-        }
 
         CacheShipTransform();
 
         if (shipTransform == null)
-        {
-            Debug.LogError("Ship transform missing!");
             return;
-        }
 
-        // ONLY lose life on respawns, never on first spawn of level
         if (!isFirstSpawnOfLevel)
             playerLives--;
 

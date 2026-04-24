@@ -316,9 +316,30 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
+        float gravity = Mathf.Abs(Physics2D.gravity.y * rb.gravityScale);
+
+        // Vertical calculations
+        float initialVerticalVelocity = jumpForce;
+
+        float jumpHeight = (initialVerticalVelocity * initialVerticalVelocity) / (2f * gravity);
+
+        float timeToApex = initialVerticalVelocity / gravity;
+        float totalAirTime = timeToApex * 2f;
+
+        // Horizontal calculations
+        float horizontalSpeed = rb.velocity.x;
+        float jumpDistance = horizontalSpeed * totalAirTime;
+
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
         coyoteCounter = 0f;
         isJumping = true;
+
+        EventBus.Jump(new JumpEvent
+        {
+            height = jumpHeight,
+            distance = jumpDistance
+        });
 
         anim?.SetTrigger(JumpHash);
     }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditorInternal.Profiling.Memory.Experimental.FileFormat;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AnalyticsManager : MonoBehaviour
 {
@@ -44,6 +45,11 @@ public class AnalyticsManager : MonoBehaviour
         GameEvents.OnLifeLost -= HandleLifeLost;
         GameEvents.OnLifeGain -= HandleLifeGain;
         GameEvents.OnJump -= HandleJump;
+    }
+
+    private void Start()
+    {
+        StartLevel(SceneManager.GetActiveScene().name);
     }
 
     // |============================================================================================|
