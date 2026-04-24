@@ -35,6 +35,16 @@ public static class EventBus
         GameEvents.Emit(e);
     }
 
+    // Movement
+    public static void ShipMoved(ShipMovedEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+    public static void PlayerChangeDirection(PlayerChangeDirectionEvent e)
+    {
+        GameEvents.Emit(e);
+    }
+
     // Player State
     public static void PlayerStateChanged(PlayerStateChangedEvent e)
     {

@@ -34,6 +34,8 @@ public class AnalyticsManager : MonoBehaviour
         GameEvents.OnLifeLost += HandleLifeLost;
         GameEvents.OnLifeGain += HandleLifeGain;
         GameEvents.OnJump += HandleJump;
+        GameEvents.OnShipMoved += HandleShipMoved;
+        GameEvents.OnPlayerChangedDirection += HandleMovement;
     }
 
     private void OnDisable()
@@ -45,6 +47,8 @@ public class AnalyticsManager : MonoBehaviour
         GameEvents.OnLifeLost -= HandleLifeLost;
         GameEvents.OnLifeGain -= HandleLifeGain;
         GameEvents.OnJump -= HandleJump;
+        GameEvents.OnShipMoved -= HandleShipMoved;
+        GameEvents.OnPlayerChangedDirection -= HandleMovement;
     }
 
     private void Start()
@@ -134,10 +138,13 @@ public class AnalyticsManager : MonoBehaviour
 
         current.jumps.RegisterJump(e.height, e.distance);
     }
-    // ?¿?¿ Arreglar con la creación de eventos
-    public void HandleMovement()
+
+    public void HandleMovement(PlayerChangeDirectionEvent e)
     {
         current.movement.directionChanged();
+    }
+    public void HandleShipMoved(ShipMovedEvent e)
+    {
         current.movement.shipMoved();
     }
 }
@@ -147,7 +154,7 @@ public class AnalyticsManager : MonoBehaviour
 // |======|
 // COMMENT EVERYTHING AND SAVE IT
 // --QUEDA POR HACER
-// TIEMPO
-// MOVIMIENTO
-// BLOQUES
+// Mejorar el JUMP (Para mínimos y máximos)
+// TIEMPO (Opcional) + Añadir playerStates
 // ABILITY "COMBO_SAVER"
+// BLOQUES
