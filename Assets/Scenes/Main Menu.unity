@@ -206,7 +206,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1789014240}
         m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
-        m_MethodName: OpenSettings
+        m_MethodName: OpenStats
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -318,6 +318,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
         m_MethodName: ToggleBGM
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1239567320}
+        m_TargetAssemblyTypeName: SettingsUI, Assembly-CSharp
+        m_MethodName: OnBGMChanged
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2147,6 +2159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1239567318}
   - component: {fileID: 1239567319}
+  - component: {fileID: 1239567320}
   m_Layer: 5
   m_Name: Settings Panel
   m_TagString: Untagged
@@ -2203,6 +2216,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
+--- !u!114 &1239567320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1239567317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80249ea1b8153884baeee7589cb64fe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1251899518
 GameObject:
   m_ObjectHideFlags: 0
@@ -2883,7 +2908,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2011124649}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1239567320}
+        m_TargetAssemblyTypeName: SettingsUI, Assembly-CSharp
+        m_MethodName: OnVolumeChanged
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1588182195
 GameObject:
   m_ObjectHideFlags: 0
@@ -3297,15 +3334,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenuPanel: {fileID: 1028296127}
   settingsPanel: {fileID: 1239567317}
+  statsPanel: {fileID: 2074580311}
   mainMenuButtons:
   - {fileID: 1774662755}
   - {fileID: 1857046996}
+  - {fileID: 56567420}
   - {fileID: 1122640921}
   settingsItems:
   - {fileID: 190166810}
   - {fileID: 2075796810}
   - {fileID: 1575342089}
   - {fileID: 1850886745}
+  statsItems:
+  - {fileID: 1956511975}
   bgmEnabled: 1
   sfxEnabled: 1
   bgmText: {fileID: 1336679810}
@@ -4443,6 +4484,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1239567320}
+        m_TargetAssemblyTypeName: SettingsUI, Assembly-CSharp
+        m_MethodName: OnSFXChanged
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2100872178
 GameObject:
   m_ObjectHideFlags: 0
@@ -4638,9 +4691,9 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1680494097}
-  - {fileID: 2104469108636724771}
-  - {fileID: 1480924934}
-  - {fileID: 1789014239}
   - {fileID: 1742174383}
   - {fileID: 837618322}
+  - {fileID: 2104469108636724771}
+  - {fileID: 1480924934}
+  - {fileID: 1680494097}
+  - {fileID: 1789014239}

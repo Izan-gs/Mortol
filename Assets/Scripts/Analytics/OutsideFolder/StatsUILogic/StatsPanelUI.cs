@@ -12,22 +12,26 @@ public class StatsPanelUI : MonoBehaviour
     public TMP_Text enemiesText;
     public TMP_Text abilitiesText;
 
+    
     public void Show(LevelAnalytics data)
     {
+        if (data == null) return;
+        gameObject.SetActive(true); // Opens the panel
+
         var vm = StatsMapper.Map(data);
 
-        jumpsText.text = $"Jumps: {vm.totalJumps}\nMax: {vm.maxJumpHeight:0.0}\nMin: {vm.minJumpHeight:0.0}";
-
+        jumpsText.text = $"Jumps: {vm.totalJumps}\nMax: {vm.maxJumpHeight:F2}\nMin: {vm.minJumpHeight:F2}";
+        Debug.Log($"TEST: {vm.maxJumpHeight:F2}");
         timeText.text = $"Time: {vm.totalTime:0.0}s";
 
         enemiesText.text =
-            $"Pig: {vm.enemiesKilled["Pig"]}\n" +
-            $"Bee: {vm.enemiesKilled["Bumblebee"]}\n" +
-            $"Crocodile: {vm.enemiesKilled["Crocodile"]}";
+            $"Pig: {vm.enemiesKilled[EnemyType.Pig.ToString()]}\n" +
+            $"Bee: {vm.enemiesKilled[EnemyType.Bumblebee.ToString()]}\n" +
+            $"Crocodile: {vm.enemiesKilled[EnemyType.Crocodile.ToString()]}";
 
         abilitiesText.text =
-            $"Stone: {vm.abilitiesUsed["Stone"]}\n" +
-            $"Explosion: {vm.abilitiesUsed["Explosion"]}\n" +
-            $"Arrow: {vm.abilitiesUsed["Arrow"]}";
+            $"Stone: {vm.abilitiesUsed[AbilityType.Stone.ToString()]}\n" +
+            $"Explosion: {vm.abilitiesUsed[AbilityType.Explosion.ToString()]}\n" +
+            $"Arrow: {vm.abilitiesUsed[AbilityType.Arrow.ToString()]}";
     }
 }

@@ -182,15 +182,8 @@ public class AnalyticsManager : MonoBehaviour
 // |============================================================================================|
 // COMMENT EVERYTHING AND SAVE IT
 
-// Mejorar el JUMP (Para mínimos y máximos)
-// TIEMPO (Opcional) + Añadir playerStates
-// ABILITY "COMBO_SAVER"
-// BLOQUES
-// |============================================================================================|
-
-// |============================================================================================|
-// Falta guardar las preferencias del player en un script de config local
-// Falta aplicar en una interfaz las métricas además de mandarlas al mongo
-// Conectar a MONGO
-// Escribir en el GAMEPLAY los eventos
+// Mejorar el JUMP (Para mínimos y máximos) (Para esto, hay que hacer llamadas a la lógica al hacer el salto y al finalizarlo)
+// TIEMPO (Añadir playerStates para que funcionen las métricas de tiempo)
+// BLOQUES (Falta hacer los eventos específicos)
+// ABILITY "COMBO_SAVER" (Falta hacer la lógica del combo saver)
 // |============================================================================================|

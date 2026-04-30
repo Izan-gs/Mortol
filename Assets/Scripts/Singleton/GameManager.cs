@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class GameManager : MonoBehaviour
     // Pause
     private GameObject pauseText;
     private bool isPaused;
+    // Settings
+    public static PlayerSettingsService Settings;
 
     void Awake()
     {
@@ -45,6 +48,10 @@ public class GameManager : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        // Settings init
+        Settings = new PlayerSettingsService();
+        PlayerSettings loaded = LoadSettings(); // Loading Player Settings
+        Settings.Load(loaded);
     }
 
     void Update()
@@ -53,8 +60,26 @@ public class GameManager : MonoBehaviour
         {
             TogglePause();
         }
+        // Settings check for changes
+        if (Settings.ConsumeDirtyFlag())
+        {
+            SaveSettings();
+        }
     }
+    // =====================================================================================================| SETTINGS
+    public void SaveSettings()
+    {
+        var json = JsonUtility.ToJson(Settings.Current, true);
+        Debug.Log(json);
 
+        // TODO: guardar en archivo o Mongo
+    }
+    private PlayerSettings LoadSettings()
+    {
+        // De momento no tienes persistencia -> devolvemos null
+        return null;
+    }
+    // =====================================================================================================|
     private void TogglePause()
     {
         isPaused = !isPaused;
@@ -102,14 +127,18 @@ public class GameManager : MonoBehaviour
         ResetForNewLevel();
         // Ends the level and Starts the new one
         AnalyticsManager.Instance.EndLevel();
-        statsPanel.Show(AnalyticsManager.Instance.GetCurrentLevelData());
         AnalyticsManager.Instance.StartLevel(scene.name);
+        // Panel stats showing
+        statsPanel.Show(AnalyticsManager.Instance.GetCurrentLevelData());
     }
     // END GAME
     private void OnApplicationQuit()
     {
+        // Save analytics
         AnalyticsManager.Instance.EndLevel();
         AnalyticsManager.Instance.EndGame();
+        // Save settings
+        SaveSettings();
     }
     // =====================================================================================================|
     private void ResetForNewLevel()

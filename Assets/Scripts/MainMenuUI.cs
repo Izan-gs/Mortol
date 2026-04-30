@@ -9,10 +9,12 @@ public class MainMenuUI : MonoBehaviour
     [Header("Panels")]
     public GameObject mainMenuPanel;
     public GameObject settingsPanel;
+    public GameObject statsPanel;
 
     [Header("Menu Buttons")]
     public Button[] mainMenuButtons;
     public Selectable[] settingsItems;
+    public Selectable[] statsItems;
 
     [Header("Settings - Audio")]
     public bool bgmEnabled = true;
@@ -105,14 +107,14 @@ public class MainMenuUI : MonoBehaviour
         currentIndex = 0;
         Highlight();
     }
-
-    // PANEL MANAGEMENT
+    // ========================================================================================= PANEL MANAGEMENT
     public void ShowMainMenu()
     {
         inSettings = false;
 
         mainMenuPanel.SetActive(true);
         settingsPanel.SetActive(false);
+        statsPanel.SetActive(false);
 
         SetMenu(mainMenuButtons);
     }
@@ -125,6 +127,15 @@ public class MainMenuUI : MonoBehaviour
         settingsPanel.SetActive(true);
 
         SetMenu(settingsItems);
+    }
+    public void OpenStats()
+    {
+        inSettings = true;
+
+        mainMenuPanel.SetActive(false);
+        statsPanel.SetActive(true);
+
+        SetMenu(statsItems);
     }
 
     public void PlayGame()
@@ -142,7 +153,7 @@ public class MainMenuUI : MonoBehaviour
         ShowMainMenu();
     }
 
-    // AUDIO
+    // ========================================================================================= AUDIO
     public void ToggleBGM()
     {
         bgmEnabled = !bgmEnabled;
@@ -167,8 +178,7 @@ public class MainMenuUI : MonoBehaviour
         if (sfxText != null)
             sfxText.text = sfxEnabled ? "SFX    ON" : "SFX  OFF";
     }
-
-    // VOLUME
+    // ========================================================================================= VOLUME
     public void SetVolume(int value)
     {
         volumeLevel = Mathf.Clamp(value, 0, 10);
@@ -199,4 +209,5 @@ public class MainMenuUI : MonoBehaviour
     {
         SetVolume(volumeLevel - 1);
     }
+    // ====================================================================================================
 }
