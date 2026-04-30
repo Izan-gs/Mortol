@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine;
 using TMPro;
 
+// Connects the UI Stats Panel with the Analytics Logic
 public class StatsPanelUI : MonoBehaviour
 {
     public TMP_Text jumpsText;

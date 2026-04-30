@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Connects the UI Settings Panel with the Settings Logic
 public class SettingsUI : MonoBehaviour
 {
     public void OnVolumeChanged(float value)

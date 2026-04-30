@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Save to MongoDB (backend)
+// Save to backend (MongoDB)
 [Serializable]
 public class PlayerSettings
 {

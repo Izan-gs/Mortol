@@ -125,11 +125,15 @@ public class GameManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ResetForNewLevel();
-        // Ends the level and Starts the new one
+        // Ends the level analytics
         AnalyticsManager.Instance.EndLevel();
+        // Starts the new level analytics
         AnalyticsManager.Instance.StartLevel(scene.name);
         // Panel stats showing
-        statsPanel.Show(AnalyticsManager.Instance.GetCurrentLevelData());
+        if (statsPanel != null)
+        {
+            statsPanel.Show(AnalyticsManager.Instance.GetCurrentLevelData());
+        }
     }
     // END GAME
     private void OnApplicationQuit()

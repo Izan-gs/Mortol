@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PlayerSettingsService
 {
-    // Chages occurred
+    // Chages occurred detector
     private bool isDirty;
+
     public PlayerSettings Current { get; private set; }
 
     // If there is saved data, I use it, if not, I create it.
