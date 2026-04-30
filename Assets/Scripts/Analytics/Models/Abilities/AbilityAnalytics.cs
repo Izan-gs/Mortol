@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [Serializable]
@@ -16,5 +17,11 @@ public class AbilityAnalytics
             usage[key] = 0;
 
         usage[key]++;
+    }
+
+    // Getter
+    public Dictionary<string, int> GetAbilities()
+    {
+        return usage;
     }
 }

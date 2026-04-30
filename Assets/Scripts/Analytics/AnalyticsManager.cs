@@ -8,8 +8,12 @@ public class AnalyticsManager : MonoBehaviour
 {
     public static AnalyticsManager Instance;
 
+    // It lives from StartLevel -> EndLevel
     private LevelAnalytics current;
     private bool isLevelActive = false;
+    // It lives from Play -> ExitGame
+    private GameSessionAnalytics session;
+    private bool isSessioActive = false;
 
     // |============================================================================================|
 
@@ -51,20 +55,38 @@ public class AnalyticsManager : MonoBehaviour
         GameEvents.OnPlayerChangedDirection -= HandleMovement;
     }
 
-    private void Start()
-    {
-        StartLevel(SceneManager.GetActiveScene().name);
-    }
-
     // |============================================================================================|
+    #region Game Session Analytics
+    public void StartGame(string sessionId)
+    {
+        session = GameSessionAnalyticsFactory.Create(sessionId);
+        isSessioActive = true;
+    }
+    public void EndGame()
+    {
+        if (!isSessioActive) return;
 
-    #region Basic methods
+        session.sessionEndTime = Time.time;
+        isSessioActive = false;
+
+        // Possible coroutine implementation
+        string json = JsonUtility.ToJson(session, true);
+        Debug.Log(json);
+        
+        // Enviar a backend (MongoDB)
+
+        session = null; // Clears the instance
+    }
+    #endregion
+    // |============================================================================================|
+    #region Level Analytics
+    // It creates a LevelAnalytics instance
     public void StartLevel(string levelId)
     {
         current = LevelAnalyticsFactory.Create(levelId);
         isLevelActive = true;
     }
-
+    // It converts the LevelAnalytics instance into JSON send to backend and clears it
     public void EndLevel()
     {
         if (!isLevelActive) return;
@@ -72,12 +94,16 @@ public class AnalyticsManager : MonoBehaviour
         current.sessionEndTime = Time.time;
         isLevelActive = false;
 
-        string json = JsonUtility.ToJson(current, true);
-        Debug.Log(json);
+        // En caso de querer convertir el nivel en JSON y guardarlo.
+        //string json = JsonUtility.ToJson(current, true);
+        //Debug.Log(json);
 
-        // Enviar a backend (MongoDB)
+        // Adds the level to the Game Session Levels
+        session.AddLevel(current);
+        current = null; // Clears the instance
     }
-
+    #endregion
+    // |============================================================================================|
     // Checks a valid state of the analytics system:
     // 1- Exists the singleton manager "Instance"?
     // 2- Exists a current active level?
@@ -86,8 +112,6 @@ public class AnalyticsManager : MonoBehaviour
     {
         return Instance != null && isLevelActive && current != null;
     }
-    #endregion
-
 
     // |==========================================================================================================|
     // |===============================================================================|
@@ -147,14 +171,26 @@ public class AnalyticsManager : MonoBehaviour
     {
         current.movement.shipMoved();
     }
+
+    // GETTER
+    public LevelAnalytics GetCurrentLevelData()
+    {
+        return current;
+    }
 }
 
-// |======|
-// TO-DO
-// |======|
+// |============================================================================================|
 // COMMENT EVERYTHING AND SAVE IT
-// --QUEDA POR HACER
+
 // Mejorar el JUMP (Para mínimos y máximos)
 // TIEMPO (Opcional) + Añadir playerStates
 // ABILITY "COMBO_SAVER"
 // BLOQUES
+// |============================================================================================|
+
+// |============================================================================================|
+// Falta guardar las preferencias del player en un script de config local
+// Falta aplicar en una interfaz las métricas además de mandarlas al mongo
+// Conectar a MONGO
+// Escribir en el GAMEPLAY los eventos
+// |============================================================================================|

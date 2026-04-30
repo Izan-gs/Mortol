@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public StatsPanelUI statsPanel;
+
     [Header("Lives")]
     public int playerLives = 20;
 
@@ -87,18 +89,29 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-
+    // =====================================================================================================| ANALYTICS FLOW
     void Start()
     {
         FindLivesText();
         UpdateLivesUI();
+        // Analytics Game Session starts
+        AnalyticsManager.Instance.StartGame(System.Guid.NewGuid().ToString());
     }
-
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ResetForNewLevel();
+        // Ends the level and Starts the new one
+        AnalyticsManager.Instance.EndLevel();
+        statsPanel.Show(AnalyticsManager.Instance.GetCurrentLevelData());
+        AnalyticsManager.Instance.StartLevel(scene.name);
     }
-
+    // END GAME
+    private void OnApplicationQuit()
+    {
+        AnalyticsManager.Instance.EndLevel();
+        AnalyticsManager.Instance.EndGame();
+    }
+    // =====================================================================================================|
     private void ResetForNewLevel()
     {
         isFirstSpawnOfLevel = true;

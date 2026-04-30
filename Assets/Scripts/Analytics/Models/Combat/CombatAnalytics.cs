@@ -18,4 +18,10 @@ public class CombatAnalytics
 
         kills[key]++;
     }
+
+    // Getter
+    public Dictionary<string, int> GetKills()
+    {
+        return kills;
+    }
 }
