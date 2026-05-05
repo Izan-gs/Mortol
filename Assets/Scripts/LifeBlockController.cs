@@ -9,12 +9,14 @@ public class LifeBlockController : MonoBehaviour
     
     public LifeBlock lifeblock;
 
+    // It adds the corresponding sprite when game runs
     SpriteRenderer spriteRenderer;
     public Sprite[] sprites; // 3 - 5 - 10
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = null; // Deleting the default sprite
         switch (lifeblock.lifeAmount)
         {
             case 3:

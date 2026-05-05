@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class MovementAnalytics : MonoBehaviour
+public class MovementAnalytics
 {
     public int directionChanges;
     public int shipMovementsByObstacles;

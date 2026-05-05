@@ -6,15 +6,4 @@ using UnityEngine;
 public class LifeBlock : ScriptableObject
 {
     public int lifeAmount;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
