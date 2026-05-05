@@ -142,6 +142,10 @@ public class MainMenuUI : MonoBehaviour
     {
         SceneManager.LoadScene("Tutorial");
     }
+    public void PlayTestLevel()
+    {
+        SceneManager.LoadScene("Level_Test");
+    }
 
     public void ExitGame()
     {
