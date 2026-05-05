@@ -25,9 +25,13 @@ public class NestController : MonoBehaviour
 
     private readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[4];
 
+    [SerializeField] private Sprite deadSprite;
+    private SpriteRenderer spriteRenderer;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
@@ -129,12 +133,9 @@ public class NestController : MonoBehaviour
         {
             isAlive = false;
             isActive = false;
+            spriteRenderer.sprite = deadSprite;
 
             StopAllCoroutines();
-
-            Collider2D col = GetComponent<Collider2D>();
-            if (col != null)
-                col.enabled = false;
 
             if (animator != null)
                 animator.enabled = false;
