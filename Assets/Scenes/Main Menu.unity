@@ -1024,7 +1024,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: BACK TO SETTINGS
+  m_text: BACK TO MAIN MENU
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d77cc4978800ba24e903e283a67e37e5, type: 2}
   m_sharedMaterial: {fileID: 2949813300848394569, guid: d77cc4978800ba24e903e283a67e37e5, type: 2}
@@ -3452,7 +3452,7 @@ GameObject:
   - component: {fileID: 1850886746}
   - component: {fileID: 1850886745}
   m_Layer: 5
-  m_Name: Back To Settings Button
+  m_Name: Back To Main Menu Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
