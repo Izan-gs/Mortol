@@ -58,6 +58,6 @@ public class FloorSpikesController : MonoBehaviour
         // SPECIAL SPIKE DEATH STATE
         player.SetDeadBySpikes();
 
-        player.Die();
+        player.Die(true);
     }
 }

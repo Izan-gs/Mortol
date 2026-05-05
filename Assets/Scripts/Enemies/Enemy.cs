@@ -40,11 +40,11 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        PlayerController player = collision.gameObject.GetComponentInParent<PlayerController>();
+        PlayerController player = collision.collider.GetComponentInParent<PlayerController>();
 
         if (player != null && player.canDamageEnemies)
         {
-            TakeDamage(1);
+            TakeDamage(1, true);
             return;
         }
         else if (player != null)

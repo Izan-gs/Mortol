@@ -409,8 +409,19 @@ public class PlayerController : MonoBehaviour
 
     public void OnStone(InputAction.CallbackContext context)
     {
-        if (context.performed && !controlsLocked)
-            TurnToStone();
+        if (!context.performed)
+            return;
+
+        if (isStuck)
+            return;
+
+        // Prevent stone transformation during parachute
+        if (isParachuting)
+            return;
+
+        controlsLocked = false;
+
+        TurnToStone();
     }
 
     public void OnExplode(InputAction.CallbackContext context)
@@ -431,20 +442,24 @@ public class PlayerController : MonoBehaviour
 
     void TurnToStone()
     {
-        if (isStone) return;
+        if (isParachuting)
+            return;
 
         isSticking = false;
-        isStuck = false;
         lockYPosition = false;
-        rb.gravityScale = 1f;
+        isStuck = false;
+
+        if (isStone) return;
+
+        ResetMovementStates();
+
+        isSticking = false;
+        lockYPosition = false;
 
         isStone = true;
         isInvulnerable = true;
         canDamageEnemies = true;
         wasFallingStone = true;
-
-        int cameraWallLayer = LayerMask.NameToLayer("CameraWall");
-        Physics2D.IgnoreLayerCollision(stickingLayer, cameraWallLayer, false);
 
         anim?.SetTrigger(StoneHash);
 
@@ -491,7 +506,17 @@ public class PlayerController : MonoBehaviour
 
     void StartStick()
     {
-        if (isStone || isStuck || isSticking) return;
+        controlsLocked = false;
+        isStone = false;
+        wasFallingStone = false;
+
+        if (isStuck) return;
+
+        // IMPORTANT: allow stick even after stone transition
+        isSticking = false;
+        lockYPosition = false;
+
+        ResetMovementStates();
 
         isSticking = true;
         isInvulnerable = true;
@@ -594,6 +619,24 @@ public class PlayerController : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private void ResetMovementStates()
+    {
+        // ONLY physics reset (NOT ability state)
+
+        lockYPosition = false;
+
+        rb.gravityScale = 1f;
+
+        if (stickTimeoutCoroutine != null)
+        {
+            StopCoroutine(stickTimeoutCoroutine);
+            stickTimeoutCoroutine = null;
+        }
+
+        // IMPORTANT: do NOT reset isSticking / isStuck here
+        // they control ability flow and must persist correctly
+    }
+
     #endregion
 
     #region Collision
@@ -644,14 +687,13 @@ public class PlayerController : MonoBehaviour
 
     #region Death
 
-    public void Die()
+    public void Die(bool ignoreInvulnerability = false)
     {
-        if (isInvulnerable) return;
+        if (isInvulnerable && !ignoreInvulnerability) return;
 
         moveInput = Vector2.zero;
         rb.velocity = Vector2.zero;
 
-        // Ignore Enemy layer using Rigidbody2D
         rb.excludeLayers |= (1 << enemyLayer);
 
         gameObject.tag = "Untagged";

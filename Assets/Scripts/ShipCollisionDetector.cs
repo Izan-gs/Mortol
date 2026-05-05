@@ -4,19 +4,23 @@ public class ShipCollisionDetector : MonoBehaviour
 {
     public bool isCollidingWithPlatform;
 
-    void OnTriggerEnter2D(Collider2D other)
+    private Collider2D col;
+    private ContactFilter2D filter;
+    private Collider2D[] results = new Collider2D[10];
+
+    private void Awake()
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Platform"))
-        {
-            isCollidingWithPlatform = true;
-        }
+        col = GetComponent<Collider2D>();
+
+        filter = new ContactFilter2D();
+        filter.SetLayerMask(LayerMask.GetMask("Platform"));
+        filter.useTriggers = true;
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    private void FixedUpdate()
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Platform"))
-        {
-            isCollidingWithPlatform = false;
-        }
+        int count = col.OverlapCollider(filter, results);
+
+        isCollidingWithPlatform = count > 0;
     }
 }

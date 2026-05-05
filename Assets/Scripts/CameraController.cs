@@ -121,10 +121,16 @@ public class CameraController : MonoBehaviour
         if (currentPlayer != null)
             stopFollowing = currentPlayer.IsSticking();
 
-        if (!stopFollowing)
+        if (!stopFollowing && currentPlayer != null)
         {
-            float followX = player.position.x + offsetX;
-            targetX = Mathf.Max(targetX, followX);
+            // Only move camera if player is actually moving
+            float playerVelocityX = currentPlayer.GetComponent<Rigidbody2D>().velocity.x;
+
+            if (Mathf.Abs(playerVelocityX) > 0.01f && !currentPlayer.IsStoneFalling())
+            {
+                float followX = player.position.x + offsetX;
+                targetX = Mathf.Max(targetX, followX);
+            }
         }
     }
 
