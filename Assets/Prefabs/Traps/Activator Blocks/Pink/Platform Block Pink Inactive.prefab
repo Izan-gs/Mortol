@@ -147,3 +147,6 @@ MonoBehaviour:
   startActive: 0
   activeSprite: {fileID: 21300000, guid: 40c85d6a38e27d842afd7c1ee21bca67, type: 3}
   inactiveSprite: {fileID: 21300000, guid: 47945c45c044d144ab3b9455fbaa93f8, type: 3}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64

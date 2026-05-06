@@ -16,6 +16,8 @@ public class PlatformBlock : MonoBehaviour
 
     private bool isActive;
 
+    [SerializeField] private LayerMask enemyLayer;
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -42,7 +44,7 @@ public class PlatformBlock : MonoBehaviour
     {
         if (t != type) return;
 
-        // 🔥 KEY: invert based on press + initial state
+        // Invert based on press + initial state
         isActive = startActive ? !pressed : pressed;
 
         ApplyState();
@@ -55,5 +57,29 @@ public class PlatformBlock : MonoBehaviour
 
         if (sr != null)
             sr.sprite = isActive ? activeSprite : inactiveSprite;
+
+        if (isActive)
+        {
+            KillEnemiesInside();
+        }
+    }
+
+    private void KillEnemiesInside()
+    {
+        Collider2D[] hits = Physics2D.OverlapBoxAll(
+            col.bounds.center,
+            col.bounds.size,
+            0f,
+            enemyLayer
+        );
+
+        foreach (Collider2D hit in hits)
+        {
+            Enemy enemy = hit.GetComponentInParent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(999, false);
+            }
+        }
     }
 }

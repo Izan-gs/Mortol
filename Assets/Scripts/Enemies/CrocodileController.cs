@@ -36,9 +36,6 @@ public class CrocodileController : Enemy
         direction = Vector2.right;
 
         anim = GetComponent<Animator>();
-
-        GameObject p = GameObject.FindGameObjectWithTag("Player");
-        player = p ? p.transform : null;
     }
 
     protected override void Update()
@@ -46,6 +43,17 @@ public class CrocodileController : Enemy
         HandleAI();
         UpdateAnimator();
         base.Update();
+
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+
+        if (p != null && p.GetComponent<PlayerController>() != null)
+        {
+            player = p.transform;
+        }
+        else
+        {
+            player = null;
+        }
     }
 
     #region AI

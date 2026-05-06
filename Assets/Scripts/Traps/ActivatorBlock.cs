@@ -8,7 +8,8 @@ public class ActivatorBlock : MonoBehaviour
     {
         Pink,
         Blue,
-        Yellow
+        Yellow,
+        Red
     }
 
     [Header("Type")]
