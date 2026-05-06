@@ -338,11 +338,7 @@ public class PlayerController : MonoBehaviour
         coyoteCounter = 0f;
         isJumping = true;
 
-        EventBus.Jump(new JumpEvent
-        {
-            height = jumpHeight,
-            distance = jumpDistance
-        });
+        EventBus.Jump(EventFactory.Jump(jumpHeight, jumpDistance));
 
         anim?.SetTrigger(JumpHash);
     }
