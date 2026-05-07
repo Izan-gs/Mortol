@@ -89,21 +89,21 @@ public class Exit : MonoBehaviour
         img.color = c;
     }
 
-
     private IEnumerator ExitSequence()
     {
-        // Blinking event
+        // Bloqueamos el control del jugador
         if (player != null)
             player.Blinking();
 
-        // Disable player completely
+        // Desactivamos el jugador para evitar más input
         if (player != null)
             player.enabled = false;
 
-        // Play animation
+        // Activamos la animación de salida
         if (animator != null)
             animator.enabled = true;
 
+        // Mostramos el texto de nivel completado
         if (objectToActivate != null)
         {
             objectToActivate.SetActive(true);
@@ -116,9 +116,10 @@ public class Exit : MonoBehaviour
             }
         }
 
+        // Guardamos las vidas antes del cambio de nivel
         GameManager.Instance.SaveLevelLives();
 
-        // Wait 5 seconds and spawn prefab
+        // Esperamos un poco antes de mostrar el siguiente panel
         yield return new WaitForSeconds(5f);
 
         if (objectToActivate2 != null)
@@ -127,11 +128,8 @@ public class Exit : MonoBehaviour
             StartCoroutine(FadeIn(objectToActivate2, 1f));
         }
 
-        // Wait 1 more second and change scene
+        // Espera final antes de cambiar de escena
         yield return new WaitForSeconds(2f);
-
-        if (objectToActivate != null)
-            objectToActivate.SetActive(true);
 
         AnalyticsManager.Instance.EndLevel();
 

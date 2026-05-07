@@ -35,6 +35,7 @@ public class LifeBlockController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameManager.Instance.playerLives += lifeblock.lifeAmount;
+        GameManager.Instance.UpdateLivesUI();
 
         AudioManager.instance.PlaySound(AudioManager.instance.lifeBlockSound);
 

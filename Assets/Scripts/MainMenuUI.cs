@@ -4,6 +4,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/*
+ * Interfaz del menú principal.
+ * Gestiona audio, volumen, navegación y carga de preferencias.
+ */
 public class MainMenuUI : MonoBehaviour
 {
     [Header("Panels")]
@@ -34,11 +38,17 @@ public class MainMenuUI : MonoBehaviour
     private int currentIndex;
     private bool inSettings;
 
+    // Tiempo entre movimientos del stick
+    private float nextInputTime;
+
+    // Delay para evitar spam del mando
+    [SerializeField] private float inputDelay = 0.2f;
+
     public PreferencesManager preferencesManager;
 
-    void Start()
+    private void Start()
     {
-        PreferencesData data = preferencesManager.Load();
+        PreferencesData data = GetPreferencesManager().Load();
 
         bgmEnabled = data.music;
         sfxEnabled = data.sfx;
@@ -49,63 +59,99 @@ public class MainMenuUI : MonoBehaviour
         ShowMainMenu();
     }
 
-    void SavePrefs()
-    {
-        PreferencesData data = new PreferencesData
-        {
-            music = bgmEnabled,
-            sfx = sfxEnabled,
-            volume = volumeLevel
-        };
-
-        preferencesManager.Save(data);
-    }
-
-    void OnApplicationQuit()
-    {
-        SaveToFile();
-    }
-
-    void Update()
+    private void Update()
     {
         HandleInput();
     }
 
-    void HandleInput()
+    // Maneja teclado y mando.
+    private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-            Move(1);
-        else if (Input.GetKeyDown(KeyCode.W))
-            Move(-1);
+        // NAVEGACIÓN VERTICAL
+        float vertical = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+        bool moveDown =
+            Input.GetKeyDown(KeyCode.S) ||
+            (vertical < -0.5f && Time.unscaledTime > nextInputTime);
+
+        bool moveUp =
+            Input.GetKeyDown(KeyCode.W) ||
+            (vertical > 0.5f && Time.unscaledTime > nextInputTime);
+
+        if (moveDown)
         {
+            nextInputTime = Time.unscaledTime + inputDelay;
+            Move(1);
+        }
+        else if (moveUp)
+        {
+            nextInputTime = Time.unscaledTime + inputDelay;
+            Move(-1);
+        }
+
+        // CONFIRMAR BOTÓN
+        if (
+            Input.GetKeyDown(KeyCode.Return) ||
+            Input.GetKeyDown(KeyCode.Space) ||
+            Input.GetKeyDown(KeyCode.JoystickButton0)
+        )
+        {
+            // Evita activar el botón de volumen
             if (inSettings && currentIndex == volumeIndex)
                 return;
 
-            var btn = currentMenu[currentIndex] as Button;
+            Button btn = currentMenu[currentIndex] as Button;
+
             if (btn != null)
                 btn.onClick.Invoke();
         }
 
-        if (inSettings && currentMenu[currentIndex].gameObject == volumeButton)
+        // CONTROL DE VOLUMEN
+        if (
+            inSettings &&
+            currentMenu[currentIndex] != null &&
+            currentMenu[currentIndex].gameObject == volumeButton
+        )
         {
-            if (Input.GetKeyDown(KeyCode.D))
+            float horizontal = Input.GetAxisRaw("Horizontal");
+
+            bool increase =
+                Input.GetKeyDown(KeyCode.D) ||
+                (horizontal > 0.5f && Time.unscaledTime > nextInputTime);
+
+            bool decrease =
+                Input.GetKeyDown(KeyCode.A) ||
+                (horizontal < -0.5f && Time.unscaledTime > nextInputTime);
+
+            if (increase)
             {
+                nextInputTime = Time.unscaledTime + inputDelay;
                 IncreaseVolume();
             }
 
-            if (Input.GetKeyDown(KeyCode.A))
+            if (decrease)
             {
+                nextInputTime = Time.unscaledTime + inputDelay;
                 DecreaseVolume();
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape) && inSettings)
+        // VOLVER ATRÁS
+
+        if (
+            (
+                Input.GetKeyDown(KeyCode.Escape) ||
+                Input.GetKeyDown(KeyCode.JoystickButton1)
+            ) &&
+            inSettings
+        )
+        {
             BackToMain();
+        }
     }
 
-    void Move(int direction)
+    // Mueve el foco por el menú.
+    private void Move(int direction)
     {
         if (currentMenu == null || currentMenu.Length == 0)
             return;
@@ -120,7 +166,8 @@ public class MainMenuUI : MonoBehaviour
         Highlight();
     }
 
-    void Highlight()
+    // Resalta el elemento actual
+    private void Highlight()
     {
         if (currentMenu == null || currentMenu.Length == 0)
             return;
@@ -131,7 +178,9 @@ public class MainMenuUI : MonoBehaviour
         if (currentMenu[currentIndex] == null)
             return;
 
-        EventSystem.current.SetSelectedGameObject(currentMenu[currentIndex].gameObject);
+        EventSystem.current.SetSelectedGameObject(
+            currentMenu[currentIndex].gameObject
+        );
     }
 
     public void SetMenu(Selectable[] menu)
@@ -140,7 +189,9 @@ public class MainMenuUI : MonoBehaviour
         currentIndex = 0;
         Highlight();
     }
-    // ========================================================================================= PANEL MANAGEMENT
+
+    // PANEL MANAGEMENT
+
     public void ShowMainMenu()
     {
         inSettings = false;
@@ -161,6 +212,7 @@ public class MainMenuUI : MonoBehaviour
 
         SetMenu(settingsItems);
     }
+
     public void OpenStats()
     {
         inSettings = true;
@@ -173,11 +225,9 @@ public class MainMenuUI : MonoBehaviour
 
     public void PlayGame()
     {
-        System.Diagnostics.Process.Start("java",
-"-cp . PreferencesService");
-
         SceneManager.LoadScene("Tutorial");
     }
+
     public void PlayTestLevel()
     {
         SceneManager.LoadScene("Level_Test");
@@ -193,7 +243,8 @@ public class MainMenuUI : MonoBehaviour
         ShowMainMenu();
     }
 
-    // ========================================================================================= AUDIO
+    // AUDIO
+
     public void ToggleBGM()
     {
         bgmEnabled = !bgmEnabled;
@@ -201,7 +252,7 @@ public class MainMenuUI : MonoBehaviour
         AudioManager.instance.SetBGM(bgmEnabled);
         UpdateAudioTexts();
 
-        SaveToFile();
+        SavePreferences();
     }
 
     public void ToggleSFX()
@@ -211,10 +262,10 @@ public class MainMenuUI : MonoBehaviour
         AudioManager.instance.SetSFX(sfxEnabled);
         UpdateAudioTexts();
 
-        SaveToFile();
+        SavePreferences();
     }
 
-    void UpdateAudioTexts()
+    private void UpdateAudioTexts()
     {
         if (bgmText != null)
             bgmText.text = bgmEnabled ? "BGM    ON" : "BGM  OFF";
@@ -222,7 +273,9 @@ public class MainMenuUI : MonoBehaviour
         if (sfxText != null)
             sfxText.text = sfxEnabled ? "SFX    ON" : "SFX  OFF";
     }
-    // ========================================================================================= VOLUME
+
+    // VOLUME
+
     public void SetVolume(int value)
     {
         volumeLevel = Mathf.Clamp(value, 0, 10);
@@ -232,10 +285,10 @@ public class MainMenuUI : MonoBehaviour
         float normalized = volumeLevel / 10f;
         AudioManager.instance.SetVolume(normalized);
 
-        SaveToFile();
+        SavePreferences();
     }
 
-    void UpdateVolumeBar()
+    private void UpdateVolumeBar()
     {
         for (int i = 0; i < volumeBlocks.Length; i++)
         {
@@ -253,7 +306,8 @@ public class MainMenuUI : MonoBehaviour
         SetVolume(volumeLevel - 1);
     }
 
-    void SaveToFile()
+    // Guarda el estado actual en el JSON y lo sube a MySQL. Se hace una sola vez para evitar sincronizaciones duplicadas
+    private void SavePreferences()
     {
         PreferencesData data = new PreferencesData
         {
@@ -262,7 +316,16 @@ public class MainMenuUI : MonoBehaviour
             volume = volumeLevel
         };
 
-        preferencesManager.Save(data);
+        GetPreferencesManager().Save(data);
+        GetPreferencesManager().ImportDatabase();
     }
-    // ====================================================================================================
+
+    // Devuelve el gestor de preferencias. Primero intenta usar la referencia asignada en el inspector y después cae al singleton si hace falta
+    private PreferencesManager GetPreferencesManager()
+    {
+        if (preferencesManager != null)
+            return preferencesManager;
+
+        return PreferencesManager.Instance;
+    }
 }

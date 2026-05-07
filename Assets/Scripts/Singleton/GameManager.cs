@@ -1,15 +1,16 @@
 using System.Collections;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    // Referencia al gestor de preferencias
     public PreferencesManager preferencesManager;
 
+    // Panel de estadísticas
     public StatsPanelUI statsPanel;
 
     [Header("Lives")]
@@ -27,14 +28,16 @@ public class GameManager : MonoBehaviour
     private bool isFirstSpawnOfLevel = true;
     private bool respawnQueued;
 
-    // Pause
+    // UI de pausa
     private GameObject pauseText;
     private bool isPaused;
-    // Settings
+
+    // Servicio de ajustes de jugador
     public static PlayerSettingsService Settings;
 
-    void Awake()
+    private void Awake()
     {
+        // Singleton
         if (Instance == null)
         {
             Instance = this;
@@ -50,60 +53,59 @@ public class GameManager : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        // Settings init
+
+        // Inicialización de settings
         Settings = new PlayerSettingsService();
-        PlayerSettings loaded = LoadSettings(); // Loading Player Settings
+        PlayerSettings loaded = LoadSettings();
         Settings.Load(loaded);
     }
 
-
-
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             TogglePause();
         }
-        // Settings check for changes
+
+        // Si cambian los ajustes, se guardan
         if (Settings.ConsumeDirtyFlag())
         {
             SaveSettings();
         }
     }
-    // =====================================================================================================| SETTINGS
+
+    // Ajustes
+
+    // Guarda los ajustes del jugador, de momento solo se muestran por consola
     public void SaveSettings()
     {
         var json = JsonUtility.ToJson(Settings.Current, true);
         Debug.Log(json);
-
-        // TODO: guardar en archivo o Mongo
     }
+
+    // Carga los ajustes del jugador, todavía no hay persistencia para este bloque
     private PlayerSettings LoadSettings()
     {
-        // De momento no tienes persistencia -> devolvemos null
         return null;
     }
 
+    // Guarda las vidas restantes del nivel actual, en el archivo local y luego las sube a la base de datos
     public void SaveLevelLives()
     {
         PreferencesData data = preferencesManager.Load();
 
-        string currentScene = SceneManager.GetActiveScene().name;
+        string scene = SceneManager.GetActiveScene().name;
 
-        if (currentScene == "Tutorial")
-        {
-            data.tutorialLives = playerLives;
-        }
-        else if (currentScene == "Level_Test")
-        {
-            data.levelTestLives = playerLives;
-        }
+        if (scene.Contains("Level 1"))
+            data.level1Lives = playerLives;
+        else if (scene.Contains("Level 2"))
+            data.level2Lives = playerLives;
 
         preferencesManager.Save(data);
-
         preferencesManager.ImportDatabase();
     }
-    // =====================================================================================================|
+
+    // Pausa
     private void TogglePause()
     {
         isPaused = !isPaused;
@@ -138,50 +140,51 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    // =====================================================================================================| ANALYTICS FLOW
-    void Start()
+
+    // Analytics
+    private void Start()
     {
         FindLivesText();
         UpdateLivesUI();
-        // Analytics Game Session starts
+
         AnalyticsManager.Instance.StartGame(System.Guid.NewGuid().ToString());
 
         PreferencesData data = preferencesManager.Load();
 
-        string currentScene = SceneManager.GetActiveScene().name;
+        string scene = SceneManager.GetActiveScene().name;
 
-        if (currentScene == "Tutorial")
-        {
-            playerLives = data.tutorialLives;
-        }
-        else if (currentScene == "Level_Test")
-        {
-            playerLives = data.levelTestLives;
-        }
+        if (scene == "Level 1")
+            playerLives = data.level1Lives > 0 ? data.level1Lives : playerLives;
+        else if (scene == "Level 2")
+            playerLives = data.level2Lives > 0 ? data.level2Lives : playerLives;
     }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ResetForNewLevel();
-        // Ends the level analytics
+
         AnalyticsManager.Instance.EndLevel();
-        // Starts the new level analytics
         AnalyticsManager.Instance.StartLevel(scene.name);
-        // Panel stats showing
+
         if (statsPanel != null)
         {
             statsPanel.Show(AnalyticsManager.Instance.GetCurrentLevelData());
         }
     }
-    // END GAME
+
+    // Al cerrar el juego se guarda todo lo que quede pendiente
     private void OnApplicationQuit()
     {
-        // Save analytics
         AnalyticsManager.Instance.EndLevel();
         AnalyticsManager.Instance.EndGame();
-        // Save settings
+
         SaveSettings();
+
+        if (preferencesManager != null)
+            preferencesManager.ImportDatabase();
     }
-    // =====================================================================================================|
+
+    // Niveles / Respawn
     private void ResetForNewLevel()
     {
         isFirstSpawnOfLevel = true;
@@ -209,7 +212,7 @@ public class GameManager : MonoBehaviour
             livesText = obj.GetComponent<TMP_Text>();
     }
 
-    private void UpdateLivesUI()
+    public void UpdateLivesUI()
     {
         if (livesText != null)
             livesText.text = playerLives.ToString();
@@ -251,7 +254,11 @@ public class GameManager : MonoBehaviour
 
         isFirstSpawnOfLevel = false;
 
-        currentPlayer = Instantiate(playerPrefab, shipTransform.position, Quaternion.identity);
+        currentPlayer = Instantiate(
+                playerPrefab,
+                shipTransform.position,
+                Quaternion.identity
+        );
 
         PlayerController player = currentPlayer.GetComponent<PlayerController>();
         if (player != null)
@@ -259,7 +266,8 @@ public class GameManager : MonoBehaviour
             player.StartParachute();
 
             Exit exit = FindAnyObjectByType<Exit>();
-            if (exit != null) exit.player = player;
+            if (exit != null)
+                exit.player = player;
         }
 
         if (cam != null)
@@ -285,7 +293,6 @@ public class GameManager : MonoBehaviour
 
         respawnQueued = false;
 
-        // No lives -> back to main menu
         if (playerLives <= 0)
         {
             yield return new WaitForSeconds(2f);
@@ -299,6 +306,7 @@ public class GameManager : MonoBehaviour
         SpawnPlayer();
     }
 
+    // Utilidades
     private void CacheShipTransform()
     {
         if (shipTransform != null)
