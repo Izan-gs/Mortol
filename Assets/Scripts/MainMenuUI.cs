@@ -34,15 +34,36 @@ public class MainMenuUI : MonoBehaviour
     private int currentIndex;
     private bool inSettings;
 
+    public PreferencesManager preferencesManager;
+
     void Start()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        PreferencesData data = preferencesManager.Load();
 
-        UpdateVolumeBar();
+        bgmEnabled = data.music;
+        sfxEnabled = data.sfx;
+        volumeLevel = data.volume;
+
         UpdateAudioTexts();
-
+        UpdateVolumeBar();
         ShowMainMenu();
+    }
+
+    void SavePrefs()
+    {
+        PreferencesData data = new PreferencesData
+        {
+            music = bgmEnabled,
+            sfx = sfxEnabled,
+            volume = volumeLevel
+        };
+
+        preferencesManager.Save(data);
+    }
+
+    void OnApplicationQuit()
+    {
+        SaveToFile();
     }
 
     void Update()
@@ -86,6 +107,9 @@ public class MainMenuUI : MonoBehaviour
 
     void Move(int direction)
     {
+        if (currentMenu == null || currentMenu.Length == 0)
+            return;
+
         currentIndex += direction;
 
         if (currentIndex < 0)
@@ -98,6 +122,15 @@ public class MainMenuUI : MonoBehaviour
 
     void Highlight()
     {
+        if (currentMenu == null || currentMenu.Length == 0)
+            return;
+
+        if (EventSystem.current == null)
+            return;
+
+        if (currentMenu[currentIndex] == null)
+            return;
+
         EventSystem.current.SetSelectedGameObject(currentMenu[currentIndex].gameObject);
     }
 
@@ -140,6 +173,9 @@ public class MainMenuUI : MonoBehaviour
 
     public void PlayGame()
     {
+        System.Diagnostics.Process.Start("java",
+"-cp . PreferencesService");
+
         SceneManager.LoadScene("Tutorial");
     }
     public void PlayTestLevel()
@@ -164,6 +200,8 @@ public class MainMenuUI : MonoBehaviour
 
         AudioManager.instance.SetBGM(bgmEnabled);
         UpdateAudioTexts();
+
+        SaveToFile();
     }
 
     public void ToggleSFX()
@@ -172,6 +210,8 @@ public class MainMenuUI : MonoBehaviour
 
         AudioManager.instance.SetSFX(sfxEnabled);
         UpdateAudioTexts();
+
+        SaveToFile();
     }
 
     void UpdateAudioTexts()
@@ -190,10 +230,9 @@ public class MainMenuUI : MonoBehaviour
         UpdateVolumeBar();
 
         float normalized = volumeLevel / 10f;
-        normalized = Mathf.Clamp01(normalized);
+        AudioManager.instance.SetVolume(normalized);
 
-        if (AudioManager.instance != null)
-            AudioManager.instance.SetVolume(normalized);
+        SaveToFile();
     }
 
     void UpdateVolumeBar()
@@ -212,6 +251,18 @@ public class MainMenuUI : MonoBehaviour
     public void DecreaseVolume()
     {
         SetVolume(volumeLevel - 1);
+    }
+
+    void SaveToFile()
+    {
+        PreferencesData data = new PreferencesData
+        {
+            music = bgmEnabled,
+            sfx = sfxEnabled,
+            volume = volumeLevel
+        };
+
+        preferencesManager.Save(data);
     }
     // ====================================================================================================
 }

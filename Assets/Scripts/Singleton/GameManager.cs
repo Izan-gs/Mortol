@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public PreferencesManager preferencesManager;
+
     public StatsPanelUI statsPanel;
 
     [Header("Lives")]
@@ -54,6 +56,8 @@ public class GameManager : MonoBehaviour
         Settings.Load(loaded);
     }
 
+
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -78,6 +82,26 @@ public class GameManager : MonoBehaviour
     {
         // De momento no tienes persistencia -> devolvemos null
         return null;
+    }
+
+    public void SaveLevelLives()
+    {
+        PreferencesData data = preferencesManager.Load();
+
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene == "Tutorial")
+        {
+            data.tutorialLives = playerLives;
+        }
+        else if (currentScene == "Level_Test")
+        {
+            data.levelTestLives = playerLives;
+        }
+
+        preferencesManager.Save(data);
+
+        preferencesManager.ImportDatabase();
     }
     // =====================================================================================================|
     private void TogglePause()
@@ -121,6 +145,19 @@ public class GameManager : MonoBehaviour
         UpdateLivesUI();
         // Analytics Game Session starts
         AnalyticsManager.Instance.StartGame(System.Guid.NewGuid().ToString());
+
+        PreferencesData data = preferencesManager.Load();
+
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene == "Tutorial")
+        {
+            playerLives = data.tutorialLives;
+        }
+        else if (currentScene == "Level_Test")
+        {
+            playerLives = data.levelTestLives;
+        }
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -245,7 +282,20 @@ public class GameManager : MonoBehaviour
     private IEnumerator RespawnCoroutine()
     {
         yield return new WaitForSeconds(1f);
+
         respawnQueued = false;
+
+        // No lives -> back to main menu
+        if (playerLives <= 0)
+        {
+            yield return new WaitForSeconds(2f);
+
+            Time.timeScale = 1f;
+            SceneManager.LoadScene("MainMenu");
+
+            yield break;
+        }
+
         SpawnPlayer();
     }
 

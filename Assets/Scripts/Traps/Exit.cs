@@ -116,6 +116,8 @@ public class Exit : MonoBehaviour
             }
         }
 
+        GameManager.Instance.SaveLevelLives();
+
         // Wait 5 seconds and spawn prefab
         yield return new WaitForSeconds(5f);
 

@@ -17,7 +17,6 @@ public class StatsPanelUI : MonoBehaviour
     public void Show(LevelAnalytics data)
     {
         if (data == null) return;
-        gameObject.SetActive(true); // Opens the panel
 
         var vm = StatsMapper.Map(data);
 
