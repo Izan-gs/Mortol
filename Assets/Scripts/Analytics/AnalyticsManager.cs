@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class AnalyticsManager : MonoBehaviour
 {
     public static AnalyticsManager Instance;
+    // Repository
+    private MongoAnalyticsRepository repository;
 
     // It lives from StartLevel -> EndLevel
     private LevelAnalytics current;
@@ -27,6 +29,9 @@ public class AnalyticsManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // Repository MongoDB
+        repository = new MongoAnalyticsRepository();
     }
 
     private void OnEnable()
@@ -56,7 +61,7 @@ public class AnalyticsManager : MonoBehaviour
     }
 
     // |============================================================================================|
-    #region Game Session Analytics
+    #region GameSession Analytics
     public void StartGame(string sessionId)
     {
         session = GameSessionAnalyticsFactory.Create(sessionId);
@@ -69,11 +74,7 @@ public class AnalyticsManager : MonoBehaviour
         session.sessionEndTime = Time.time;
         isSessioActive = false;
 
-        // Possible coroutine implementation
-        string json = JsonUtility.ToJson(session, true);
-        Debug.Log(json);
-        
-        // Enviar a backend (MongoDB)
+        repository.Save(session); // Sends to backend
 
         session = null; // Clears the instance
     }
