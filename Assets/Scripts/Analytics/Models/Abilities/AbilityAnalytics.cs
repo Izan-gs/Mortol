@@ -7,21 +7,39 @@ using UnityEngine;
 [Serializable]
 public class AbilityAnalytics
 {
-    private Dictionary<String, int> usage = new();
+    [SerializeField]
+    private List<AbilityEntry> usage = new();
 
     public void RegisterUse(AbilityType ability)
     {
-        string key = ability.ToString(); // We need the string because JSON needs a string not an enum
+        string key = ability.ToString();
 
-        if (!usage.ContainsKey(key))
-            usage[key] = 0;
+        AbilityEntry entry = usage.Find(x => x.ability == key);
 
-        usage[key]++;
+        if (entry == null)
+        {
+            entry = new AbilityEntry
+            {
+                ability = key,
+                count = 0
+            };
+
+            usage.Add(entry);
+        }
+
+        entry.count++;
     }
 
     // Getter
     public Dictionary<string, int> GetAbilities()
     {
-        return usage;
+        Dictionary<string, int> dict = new();
+
+        foreach (var item in usage)
+        {
+            dict[item.ability] = item.count;
+        }
+
+        return dict;
     }
 }

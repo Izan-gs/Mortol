@@ -2,6 +2,8 @@ using MongoDB.Driver;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MongoDB.Bson.IO;
+using System.Xml;
 
 // Saves analytics in MongoDB
 public class MongoAnalyticsRepository
@@ -29,6 +31,8 @@ public class MongoAnalyticsRepository
     // Saves the GameSession
     public async void Save(GameSessionAnalytics session)
     {
+        
+
         // Await used in order to be fast and avoiding crashes
         await collection.InsertOneAsync(session);
 
@@ -37,5 +41,6 @@ public class MongoAnalyticsRepository
         // *Possible coroutine implementation* - Log JSON in Unity.
         string json = JsonUtility.ToJson(session, true);
         Debug.Log(json);
+       
     }
 }

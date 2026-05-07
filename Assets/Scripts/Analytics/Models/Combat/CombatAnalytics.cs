@@ -7,21 +7,38 @@ using UnityEngine;
 [Serializable]
 public class CombatAnalytics
 {
-    private Dictionary<String, int> kills = new();
+    [SerializeField]
+    private List<KillEntry> kills = new();
 
     public void RegisterKill(EnemyType enemy)
     {
-        string key = enemy.ToString(); // We need the string because JSON needs a string not an enum
+        string key = enemy.ToString();
 
-        if (!kills.ContainsKey(key))
-            kills[key] = 0;
+        KillEntry entry = kills.Find(x => x.enemy == key);
 
-        kills[key]++;
+        if (entry == null)
+        {
+            entry = new KillEntry
+            {
+                enemy = key,
+                count = 0
+            };
+
+            kills.Add(entry);
+        }
+
+        entry.count++;
     }
-
     // Getter
     public Dictionary<string, int> GetKills()
     {
-        return kills;
+        Dictionary<string, int> dict = new();
+
+        foreach (var item in kills)
+        {
+            dict[item.enemy] = item.count;
+        }
+
+        return dict;
     }
 }

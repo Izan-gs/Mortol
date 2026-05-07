@@ -19,6 +19,7 @@ public static class GameEvents
 
     public static void Emit(AbilityUsedEvent e)
     {
+        
         OnAbilityUsed?.Invoke(e);
     }
 
@@ -42,6 +43,7 @@ public static class GameEvents
 
     public static void Emit(JumpEvent e)
     {
+        
         OnJump?.Invoke(e);
     }
 

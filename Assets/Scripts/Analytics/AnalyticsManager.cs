@@ -86,6 +86,7 @@ public class AnalyticsManager : MonoBehaviour
     {
         current = LevelAnalyticsFactory.Create(levelId);
         isLevelActive = true;
+        
     }
     // It converts the LevelAnalytics instance into JSON send to backend and clears it
     public void EndLevel()
@@ -144,6 +145,7 @@ public class AnalyticsManager : MonoBehaviour
         if (!IsReady()) return;
 
         current.abilities.RegisterUse(e.ability);
+       
     }
     private void HandleLifeLost(LifeLostEvent e)
     {
