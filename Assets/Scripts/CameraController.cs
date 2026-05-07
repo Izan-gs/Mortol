@@ -84,12 +84,12 @@ public class CameraController : MonoBehaviour
         if (shipDetector == null)
             return;
 
-        // ALWAYS force movement while blocked
+        // Always force movement while blocked
         if (shipDetector.isCollidingWithPlatform)
         {
             targetX += shipPushSpeed * Time.deltaTime;
 
-            // IMPORTANT: force instant camera follow (no smoothing delay blocking it)
+            // Force instant camera follow (no smoothing delay blocking it)
             basePosition = new Vector3(
                 targetX,
                 basePosition.y,
@@ -99,7 +99,7 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        // ONLY when fully free
+        // Only when fully free
         FinishSafeSpawn();
     }
 
