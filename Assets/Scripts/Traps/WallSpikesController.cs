@@ -25,6 +25,9 @@ public class WallSpikesController : MonoBehaviour
             rb.velocity = Vector2.zero;
         }
 
+        // Analytics
+        EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.SpikedBalls));
+
         // SPECIAL SPIKE DEATH STATE
         player.SetDeadBySpikes();
 

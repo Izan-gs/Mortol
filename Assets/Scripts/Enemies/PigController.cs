@@ -62,6 +62,13 @@ public class PigController : Enemy
         scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction.x);
         transform.localScale = scale;
     }
+    protected override void Die()
+    {
+        // Analytics
+        EventBus.EnemyKilled(EventFactory.EnemyKilled(EnemyType.Pig));
+
+        base.Die();
+    }
 
     #endregion
 }

@@ -338,7 +338,9 @@ public class PlayerController : MonoBehaviour
         coyoteCounter = 0f;
         isJumping = true;
 
+        // Analytics
         EventBus.Jump(EventFactory.Jump(jumpHeight, jumpDistance));
+        
 
         anim?.SetTrigger(JumpHash);
     }
@@ -446,7 +448,11 @@ public class PlayerController : MonoBehaviour
         isStuck = false;
 
         if (isStone) return;
-
+        // Analytics
+        EventBus.AbilityUsed(EventFactory.AbilityUsed(AbilityType.Stone));
+        // Analytics
+        EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.Stone));
+        Debug.Log("analytics stone");
         ResetMovementStates();
 
         isSticking = false;
@@ -507,6 +513,11 @@ public class PlayerController : MonoBehaviour
         wasFallingStone = false;
 
         if (isStuck) return;
+
+        // Analytics
+        EventBus.AbilityUsed(EventFactory.AbilityUsed(AbilityType.Arrow));
+        // Analytics
+        EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.Arrow));
 
         // IMPORTANT: allow stick even after stone transition
         isSticking = false;
@@ -602,6 +613,10 @@ public class PlayerController : MonoBehaviour
     void Explode()
     {
         if (isStone) return;
+        // Analytics
+        EventBus.AbilityUsed(EventFactory.AbilityUsed(AbilityType.Explosion));
+        // Analytics
+        EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.Explosion));
 
         Instantiate(explosionParticle, transform.position, Quaternion.identity);
         Instantiate(deadParticle, transform.position, Quaternion.identity);

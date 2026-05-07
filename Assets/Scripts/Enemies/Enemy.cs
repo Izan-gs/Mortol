@@ -49,6 +49,15 @@ public abstract class Enemy : MonoBehaviour
         }
         else if (player != null)
         {
+            // Analytics
+            if (this is PigController)
+            {
+                EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.Pig));
+            }
+            else if (this is CrocodileController)
+            {
+                EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.Crocodile));
+            }
             player.Die();
         }
     }
@@ -100,6 +109,21 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void Die()
     {
         onDie?.Invoke();
+
+        // Analytics
+        if (this is PigController)
+        {
+            EventBus.LifeGained(EventFactory.LifeGain(LifeGainSource.Pig));
+        }
+        else if (this is CrocodileController)
+        {
+            EventBus.LifeGained(EventFactory.LifeGain(LifeGainSource.Crocodile));
+        }
+        else if (this is BumblebeeController)
+        {
+            EventBus.LifeGained(EventFactory.LifeGain(LifeGainSource.Bumblebee));
+        }
+
 
         // Spawn death particles
         if (deadParticle != null)

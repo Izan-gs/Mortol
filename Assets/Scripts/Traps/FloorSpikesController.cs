@@ -55,6 +55,9 @@ public class FloorSpikesController : MonoBehaviour
             player.transform.position.z
         );
 
+        // Analytics
+        EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.Spikes));
+
         // SPECIAL SPIKE DEATH STATE
         player.SetDeadBySpikes();
 

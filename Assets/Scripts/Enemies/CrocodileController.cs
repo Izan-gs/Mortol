@@ -193,5 +193,13 @@ public class CrocodileController : Enemy
         }
     }
 
+    protected override void Die()
+    {
+        // Analytics
+        EventBus.EnemyKilled(EventFactory.EnemyKilled(EnemyType.Crocodile));
+
+        base.Die();
+    }
+
     #endregion
 }

@@ -79,6 +79,9 @@ public class BumblebeeController : Enemy
             }
             else
             {
+                // Analytics
+                EventBus.LifeLost(EventFactory.LifeLost(LifeLossSource.Bumblebee));
+
                 player.Die();
             }
 
@@ -101,6 +104,8 @@ public class BumblebeeController : Enemy
                 nest.IncrementDeadUnits(killedByPlayerSource);
             }
         }
+        // Analytics
+        EventBus.EnemyKilled(EventFactory.EnemyKilled(EnemyType.Bumblebee));
 
         base.Die();
     }
