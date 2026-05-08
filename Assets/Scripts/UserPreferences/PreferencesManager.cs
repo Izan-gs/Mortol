@@ -15,6 +15,8 @@ public class PreferencesManager : MonoBehaviour
     private string mysqlPath;
     private string jarPath;
 
+    private bool databaseAvailable = true;
+
     private void Awake()
     {
         // Singleton
@@ -77,23 +79,97 @@ public class PreferencesManager : MonoBehaviour
     // Ejecuta el proceso Java con el modo indicado
     private void RunJava(string mode)
     {
-        Process process = new Process();
+        if (!databaseAvailable)
+            return;
 
-        process.StartInfo.FileName = javaPath;
-        process.StartInfo.Arguments =
-            $"-cp \"{mysqlPath};{jarPath}\" PreferencesService {mode}";
+        try
+        {
+            if (!File.Exists(jarPath))
+            {
+                databaseAvailable = false;
+                UnityEngine.Debug.LogWarning($"preferences.jar not found: {jarPath}");
+                return;
+            }
 
-        process.StartInfo.CreateNoWindow = true;
-        process.StartInfo.UseShellExecute = false;
+            if (!File.Exists(mysqlPath))
+            {
+                databaseAvailable = false;
+                UnityEngine.Debug.LogWarning($"MySQL connector not found: {mysqlPath}");
+                return;
+            }
 
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.RedirectStandardError = true;
+            Process process = new Process();
 
-        process.Start();
+            process.StartInfo.FileName = "java";
 
-        string output = process.StandardOutput.ReadToEnd();
-        string error = process.StandardError.ReadToEnd();
+            process.StartInfo.Arguments =
+                $"-cp \"{mysqlPath};{jarPath}\" PreferencesService {mode}";
 
-        process.WaitForExit();
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute = false;
+
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+
+            bool started = process.Start();
+
+            if (!started)
+            {
+                databaseAvailable = false;
+                UnityEngine.Debug.LogWarning("Failed to start Java process.");
+                return;
+            }
+
+            // MAX WAIT TIME
+            int timeoutMs = 3000;
+
+            bool exited = process.WaitForExit(timeoutMs);
+
+            // If database hangs / XAMPP offline / MySQL timeout
+            if (!exited)
+            {
+                databaseAvailable = false;
+
+                try
+                {
+                    process.Kill();
+                }
+                catch { }
+
+                UnityEngine.Debug.LogWarning(
+                    "Database connection timeout. Running in offline mode."
+                );
+
+                return;
+            }
+
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            // Java returned error
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                databaseAvailable = false;
+
+                UnityEngine.Debug.LogWarning(
+                    $"Database unavailable:\n{error}"
+                );
+
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(output))
+            {
+                UnityEngine.Debug.Log(output);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            databaseAvailable = false;
+
+            UnityEngine.Debug.LogWarning(
+                $"Database disabled.\n{ex.Message}"
+            );
+        }
     }
 }

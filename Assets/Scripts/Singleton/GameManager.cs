@@ -72,6 +72,12 @@ public class GameManager : MonoBehaviour
         {
             SaveSettings();
         }
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene("Main Menu");
+        }
     }
 
     // Ajustes
@@ -147,7 +153,21 @@ public class GameManager : MonoBehaviour
         FindLivesText();
         UpdateLivesUI();
 
-        AnalyticsManager.Instance.StartGame(System.Guid.NewGuid().ToString());
+        if (AnalyticsManager.Instance != null)
+        {
+            AnalyticsManager.Instance.StartGame(System.Guid.NewGuid().ToString());
+        }
+
+        if (preferencesManager == null)
+        {
+            preferencesManager = FindAnyObjectByType<PreferencesManager>();
+
+            if (preferencesManager == null)
+            {
+                Debug.LogWarning("PreferencesManager not found.");
+                return;
+            }
+        }
 
         PreferencesData data = preferencesManager.Load();
 
@@ -175,13 +195,18 @@ public class GameManager : MonoBehaviour
     // Al cerrar el juego se guarda todo lo que quede pendiente
     private void OnApplicationQuit()
     {
-        AnalyticsManager.Instance.EndLevel();
-        AnalyticsManager.Instance.EndGame();
+        if (AnalyticsManager.Instance != null)
+        {
+            AnalyticsManager.Instance.EndLevel();
+            AnalyticsManager.Instance.EndGame();
+        }
 
         SaveSettings();
 
         if (preferencesManager != null)
+        {
             preferencesManager.ImportDatabase();
+        }
     }
 
     // Niveles / Respawn
@@ -298,7 +323,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(2f);
 
             Time.timeScale = 1f;
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene("Main Menu");
 
             yield break;
         }

@@ -3252,7 +3252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 205925819677318564, guid: f42540e522d588341a960fc8dfc7c98c, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6768118235258447145, guid: f42540e522d588341a960fc8dfc7c98c, type: 3}
       propertyPath: m_Pivot.x
@@ -11286,17 +11286,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Activator Block Blue
       objectReference: {fileID: 0}
-    - target: {fileID: 7954502601103862572, guid: 0a9a26281742f4f4fba60b7c03582a9f, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7954502601103862572, guid: 0a9a26281742f4f4fba60b7c03582a9f, type: 3}
-      propertyPath: m_TagString
-      value: Undefined
+    - target: {fileID: 8050524342802101223, guid: 0a9a26281742f4f4fba60b7c03582a9f, type: 3}
+      propertyPath: m_Size.y
+      value: 1.0062544
       objectReference: {fileID: 0}
     - target: {fileID: 8050524342802101223, guid: 0a9a26281742f4f4fba60b7c03582a9f, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8050524342802101223, guid: 0a9a26281742f4f4fba60b7c03582a9f, type: 3}
+      propertyPath: m_Offset.y
+      value: -0.13187277
       objectReference: {fileID: 0}
     - target: {fileID: 8405013333134721879, guid: 0a9a26281742f4f4fba60b7c03582a9f, type: 3}
       propertyPath: m_LocalPosition.x

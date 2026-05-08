@@ -384,11 +384,17 @@ public class PlayerController : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0)
+            return;
+
         moveInput = context.ReadValue<Vector2>();
     }
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0)
+            return;
+
         if (context.performed)
         {
             if (isParachuting)
@@ -407,6 +413,9 @@ public class PlayerController : MonoBehaviour
 
     public void OnStone(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0)
+            return;
+
         if (!context.performed)
             return;
 
@@ -424,12 +433,18 @@ public class PlayerController : MonoBehaviour
 
     public void OnExplode(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0)
+            return;
+
         if (context.performed && !controlsLocked)
             Explode();
     }
 
     public void OnStick(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0)
+            return;
+
         if (context.performed && !controlsLocked)
             StartStick();
     }
@@ -701,6 +716,9 @@ public class PlayerController : MonoBehaviour
     public void Die(bool ignoreInvulnerability = false)
     {
         if (isInvulnerable && !ignoreInvulnerability) return;
+
+        // Completely disable collisions against enemies
+        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
 
         moveInput = Vector2.zero;
         rb.velocity = Vector2.zero;

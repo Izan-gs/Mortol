@@ -39,6 +39,13 @@ public class TutorialTextController : MonoBehaviour
 
     private void Update()
     {
+        // Skip tutorial with ESC
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Level 1");
+            return;
+        }
+
         if (!videoPlayer.isPlaying)
             return;
 

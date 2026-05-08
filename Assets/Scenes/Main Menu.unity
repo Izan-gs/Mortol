@@ -3461,6 +3461,7 @@ MonoBehaviour:
   - {fileID: 582079811}
   volumeLevel: 10
   volumeIndex: 5
+  inputDelay: 0.2
   preferencesManager: {fileID: 1905250132}
 --- !u!1 &1799393365
 GameObject:
@@ -4965,6 +4966,10 @@ PrefabInstance:
     - target: {fileID: 1602683727200760347, guid: d4330bdfc826f0d44870d44a7de6b8f2, type: 3}
       propertyPath: m_Name
       value: Preferences Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 1602683727200760347, guid: d4330bdfc826f0d44870d44a7de6b8f2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4992112727231091486, guid: d4330bdfc826f0d44870d44a7de6b8f2, type: 3}
       propertyPath: m_LocalPosition.x
