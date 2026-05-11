@@ -10,6 +10,7 @@ using UnityEngine.UI;
  */
 public class MainMenuUI : MonoBehaviour
 {
+    public GameObject logo;
     [Header("Panels")]
     public GameObject mainMenuPanel;
     public GameObject settingsPanel;
@@ -53,6 +54,10 @@ public class MainMenuUI : MonoBehaviour
         bgmEnabled = data.music;
         sfxEnabled = data.sfx;
         volumeLevel = data.volume;
+        if (logo == null)
+        {
+            logo = GameObject.Find("Logo");
+        }
 
         UpdateAudioTexts();
         UpdateVolumeBar();
@@ -219,6 +224,7 @@ public class MainMenuUI : MonoBehaviour
 
         mainMenuPanel.SetActive(false);
         statsPanel.SetActive(true);
+        logo.SetActive(false);
 
         SetMenu(statsItems);
     }
@@ -240,6 +246,7 @@ public class MainMenuUI : MonoBehaviour
 
     public void BackToMain()
     {
+        logo.SetActive(true);
         ShowMainMenu();
     }
 

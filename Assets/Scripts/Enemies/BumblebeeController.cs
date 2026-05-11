@@ -105,7 +105,8 @@ public class BumblebeeController : Enemy
             }
         }
         // Analytics
-        EventBus.EnemyKilled(EventFactory.EnemyKilled(EnemyType.Bumblebee));
+        if (killedByPlayerSource)
+            EventBus.EnemyKilled(EventFactory.EnemyKilled(EnemyType.Bumblebee));
 
         base.Die();
     }

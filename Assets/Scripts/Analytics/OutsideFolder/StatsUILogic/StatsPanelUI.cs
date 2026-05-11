@@ -22,16 +22,24 @@ public class StatsPanelUI : MonoBehaviour
 
         jumpsText.text = $"Jumps: {vm.totalJumps}\nMax: {vm.maxJumpHeight:F2}\nMin: {vm.minJumpHeight:F2}";
         Debug.Log($"TEST: {vm.maxJumpHeight:F2}");
-        timeText.text = $"Time: {vm.totalTime:0.0}s";
+        //timeText.text = $"Time: {vm.totalTime:0.0}s";
 
         enemiesText.text =
-            $"Pig: {vm.enemiesKilled[EnemyType.Pig.ToString()]}\n" +
-            $"Bee: {vm.enemiesKilled[EnemyType.Bumblebee.ToString()]}\n" +
-            $"Crocodile: {vm.enemiesKilled[EnemyType.Crocodile.ToString()]}";
+            $"Pig: {GetValueOrZero(vm.enemiesKilled, EnemyType.Pig.ToString())}\n" +
+            $"Bee: {GetValueOrZero(vm.enemiesKilled, EnemyType.Bumblebee.ToString())}\n" +
+            $"Crocodile: {GetValueOrZero(vm.enemiesKilled, EnemyType.Crocodile.ToString())}";
 
         abilitiesText.text =
-            $"Stone: {vm.abilitiesUsed[AbilityType.Stone.ToString()]}\n" +
-            $"Explosion: {vm.abilitiesUsed[AbilityType.Explosion.ToString()]}\n" +
-            $"Arrow: {vm.abilitiesUsed[AbilityType.Arrow.ToString()]}";
+            $"Stone: {GetValueOrZero(vm.abilitiesUsed, AbilityType.Stone.ToString())}\n" +
+            $"Explosion: {GetValueOrZero(vm.abilitiesUsed, AbilityType.Explosion.ToString())}\n" +
+            $"Arrow: {GetValueOrZero(vm.abilitiesUsed, AbilityType.Arrow.ToString())}";
+    }
+
+    // This allows us to show 0 if there are not used entries.
+    private string GetValueOrZero(Dictionary<string, int> dict, string key)
+    {
+        return dict.TryGetValue(key, out int value)
+            ? value.ToString()
+            : "0";
     }
 }

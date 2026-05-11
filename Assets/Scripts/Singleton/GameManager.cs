@@ -68,10 +68,10 @@ public class GameManager : MonoBehaviour
         }
 
         // Si cambian los ajustes, se guardan
-        if (Settings.ConsumeDirtyFlag())
-        {
-            SaveSettings();
-        }
+        //if (Settings.ConsumeDirtyFlag())
+        //{
+        //    SaveSettings();
+        //}
 
         if (Input.GetKeyDown(KeyCode.F1))
         {
@@ -168,6 +168,11 @@ public class GameManager : MonoBehaviour
                 return;
             }
         }
+        // Búsqueda de statsPanel
+        GameObject obj = GameObject.Find("Stats Panel");
+
+        if (obj != null)
+            statsPanel = obj.GetComponent<StatsPanelUI>();
 
         PreferencesData data = preferencesManager.Load();
 
@@ -183,13 +188,20 @@ public class GameManager : MonoBehaviour
     {
         ResetForNewLevel();
 
-        AnalyticsManager.Instance.EndLevel();
-        AnalyticsManager.Instance.StartLevel(scene.name);
+        // Búsqueda de statsPanel
+        GameObject obj = GameObject.Find("Stats Panel");
+
+        if (obj != null)
+            statsPanel = obj.GetComponent<StatsPanelUI>();
 
         if (statsPanel != null)
         {
+            Debug.Log("Existe Panel");
             statsPanel.Show(AnalyticsManager.Instance.GetCurrentLevelData());
         }
+
+        AnalyticsManager.Instance.EndLevel();
+        AnalyticsManager.Instance.StartLevel(scene.name);
     }
 
     // Al cerrar el juego se guarda todo lo que quede pendiente
