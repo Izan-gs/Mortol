@@ -142,7 +142,7 @@ public class AnalyticsManager : MonoBehaviour
     private void HandleAbilityUsed(AbilityUsedEvent e)
     {
         if (!IsReady()) return;
-
+        Debug.Log("Register");
         current.abilities.RegisterUse(e.ability);
        
     }

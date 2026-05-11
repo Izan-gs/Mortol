@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8545929344598728446}
   - component: {fileID: 6502091034095959752}
   - component: {fileID: -6565970903225934455}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallSpikes
   m_TagString: Spikes
   m_Icon: {fileID: 0}
@@ -143,5 +143,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9a523828056b3b4cad63b2f2cc5f2f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minFallSpeedToDie: 0
-  destroyParticle: {fileID: 0}

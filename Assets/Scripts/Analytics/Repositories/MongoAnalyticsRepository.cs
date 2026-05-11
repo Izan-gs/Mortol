@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using MongoDB.Bson.IO;
 using System.Xml;
+using Newtonsoft.Json;
+using MongoDB.Bson;
 
 // Saves analytics in MongoDB
 public class MongoAnalyticsRepository
 {
     private MongoClient client; // Entrance door to Mongo
     private IMongoDatabase database; // Specific database reference
-    private IMongoCollection<GameSessionAnalytics> collection; // A table in Mongo
+    private IMongoCollection<BsonDocument> collection; // A table in Mongo
 
     public MongoAnalyticsRepository()
     {
@@ -21,7 +23,7 @@ public class MongoAnalyticsRepository
 
             database = client.GetDatabase("MortolDB"); // Selects DB
 
-            collection = database.GetCollection<GameSessionAnalytics>("analytics"); // Selects collection
+            collection = database.GetCollection<BsonDocument>("analytics"); // Selects collection
         }
         catch(System.Exception e)
         {
@@ -31,16 +33,28 @@ public class MongoAnalyticsRepository
     // Saves the GameSession
     public async void Save(GameSessionAnalytics session)
     {
-        
+        // Settings for Newtonsoft
+        var settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+        // Newtonsoft
+        string json = Newtonsoft.Json.JsonConvert.SerializeObject(session, Newtonsoft.Json.Formatting.Indented, settings);
+
+        // Convert JSON -> BSON document
+        BsonDocument document = BsonDocument.Parse(json);
 
         // Await used in order to be fast and avoiding crashes
-        await collection.InsertOneAsync(session);
+        await collection.InsertOneAsync(document);
 
         Debug.Log("Saved to Mongo");
+        Debug.Log(document.ToJson());
+        Debug.Log(json);
 
         // *Possible coroutine implementation* - Log JSON in Unity.
-        string json = JsonUtility.ToJson(session, true);
-        Debug.Log(json);
-       
+        //string json = JsonUtility.ToJson(session, true);
+        //Debug.Log(json);
+
     }
 }

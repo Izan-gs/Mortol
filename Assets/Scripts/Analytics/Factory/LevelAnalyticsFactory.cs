@@ -6,9 +6,11 @@ public class LevelAnalyticsFactory
 {
     public static LevelAnalytics Create(string levelId)
     {
+        Debug.Log("Create");
+
         return new LevelAnalytics
         {
-            levelId = levelId,
+        levelId = levelId,
             sessionStartTime = Time.time,
 
             abilities = new AbilityAnalytics(),
@@ -19,5 +21,5 @@ public class LevelAnalyticsFactory
             movement = new MovementAnalytics(),
             time = new TimeAnalytics()
         };
-    }
+}
 }

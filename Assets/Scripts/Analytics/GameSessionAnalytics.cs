@@ -13,7 +13,7 @@ public class GameSessionAnalytics
     public float sessionEndTime;
 
     // LEVELS PLAYED
-    public List<LevelAnalytics> levels;
+    public List<LevelAnalytics> levels = new List<LevelAnalytics>();
 
     // GLOBAL AGGREGATED METRICS
     // Nothing yet

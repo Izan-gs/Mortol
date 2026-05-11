@@ -6,8 +6,7 @@ using UnityEngine;
 [Serializable]
 public class CombatAnalytics
 {
-    [SerializeField]
-    private List<KillEntry> kills = new();
+    public List<KillEntry> kills = new();
 
     public void RegisterKill(EnemyType enemy)
     {

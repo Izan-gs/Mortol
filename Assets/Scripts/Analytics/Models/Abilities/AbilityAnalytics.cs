@@ -6,8 +6,11 @@ using UnityEngine;
 [Serializable]
 public class AbilityAnalytics
 {
-    [SerializeField]
-    private List<AbilityEntry> usage = new();
+    public List<AbilityEntry> usage = new();
+
+    public AbilityEntry[] usageArray;
+
+
 
     public void RegisterUse(AbilityType ability)
     {
@@ -22,11 +25,13 @@ public class AbilityAnalytics
                 ability = key,
                 count = 0
             };
+            Debug.Log("RegisterWasNull");
 
             usage.Add(entry);
         }
 
         entry.count++;
+        usageArray = usage.ToArray();
     }
 
     // Getter
